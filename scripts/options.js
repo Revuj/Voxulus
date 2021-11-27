@@ -1,5 +1,15 @@
 import voxulus from "./voxulus.js";
 
+let startWritingCommands = ["start writing", "begin writing"];
+let stopWritingCommands = ["stop writing", "stop search"];
+let startSearchCommands = [
+  "start search",
+  "start searching",
+  "open tab",
+  "new tab",
+];
+let eraseStuffCommands = ["erase", "delete", "undo"];
+
 navigator.mediaDevices
   .getUserMedia({ audio: true })
   .then(function (stream) {
@@ -13,17 +23,11 @@ if (annyang) {
   annyang.debug();
   console.log("We have annyang!");
 
-  var commands = {
-    "start writing": startWriting,
-    "stop writing": stopWriting,
-    "stop search": stopWriting,
-    "new tab": startSearch,
-    "open tab": startSearch,
-    "start search": startSearch,
-    erase: eraseStuff,
-    delete: eraseStuff,
-    undo: eraseStuff,
-  };
+  var commands = {};
+  startWritingCommands.forEach((command) => (commands[command] = startWriting));
+  stopWritingCommands.forEach((command) => (commands[command] = stopWriting));
+  startSearchCommands.forEach((command) => (commands[command] = startSearch));
+  eraseStuffCommands.forEach((command) => (commands[command] = eraseStuff));
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>

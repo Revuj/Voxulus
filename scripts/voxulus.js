@@ -1,8 +1,4 @@
-async function getCurrentTab() {
-  let queryOptions = { active: true, currentWindow: true };
-  let [tab] = await chrome.tabs.query(queryOptions);
-  return tab;
-}
+import { executeScript } from "./utilities.js";
 
 const machine = {
   state: "IDLE",
@@ -15,11 +11,7 @@ const machine = {
         this.state = "SEARCH";
       },
       async eraseStuff() {
-        let tab = await getCurrentTab();
-        chrome.scripting.executeScript({
-          target: { tabId: tab.id },
-          func: () => document.execCommand("undo"),
-        });
+        executeScript(() => document.execCommand("undo"));
       },
     },
     WRITING: {
@@ -30,19 +22,13 @@ const machine = {
         this.state = "SEARCH";
       },
       async writeStuff(stuff) {
-        let tab = await getCurrentTab();
-        chrome.scripting.executeScript({
-          target: { tabId: tab.id },
-          func: (stuff) => document.execCommand("insertText", false, stuff),
-          args: [stuff],
-        });
+        executeScript(
+          (stuff) => document.execCommand("insertText", false, stuff),
+          [stuff]
+        );
       },
       async eraseStuff() {
-        let tab = await getCurrentTab();
-        chrome.scripting.executeScript({
-          target: { tabId: tab.id },
-          func: () => document.execCommand("undo"),
-        });
+        executeScript(() => document.execCommand("undo"));
       },
     },
     SEARCH: {
@@ -62,6 +48,7 @@ const machine = {
       action.call(this, args);
     } else {
       console.log("invalid action");
+      console.log(this.state);
     }
   },
 };
