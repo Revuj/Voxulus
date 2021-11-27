@@ -1,7 +1,10 @@
 import { executeScript } from "./utilities.js";
 
+let scroll;
+
 const machine = {
   state: "IDLE",
+  speed: 50,
   transitions: {
     IDLE: {
       startWriting() {
@@ -12,6 +15,20 @@ const machine = {
       },
       async eraseStuff() {
         executeScript(() => document.execCommand("undo"));
+      },
+      async scrollDown() {
+        this.state = "SCROLL_DOWN";
+        scroll = setInterval(
+          () => executeScript(() => window.scrollBy(0, 50)),
+          100
+        );
+      },
+      async scrollUp() {
+        this.state = "SCROLL_UP";
+        scroll = setInterval(
+          () => executeScript(() => window.scrollBy(0, -50)),
+          100
+        );
       },
     },
     WRITING: {
@@ -40,7 +57,36 @@ const machine = {
         this.state = "IDLE";
       },
     },
+    SCROLL_DOWN: {
+      stop() {
+        clearInterval(scroll);
+        this.state = "IDLE";
+      },
+      async scrollUp() {
+        clearInterval(scroll);
+        this.state = "SCROLL_UP";
+        scroll = setInterval(
+          () => executeScript(() => window.scrollBy(0, -50)),
+          100
+        );
+      },
+    },
+    SCROLL_UP: {
+      stop() {
+        clearInterval(scroll);
+        this.state = "IDLE";
+      },
+      async scrollDown() {
+        clearInterval(scroll);
+        this.state = "SCROLL_DOWN";
+        scroll = setInterval(
+          () => executeScript(() => window.scrollBy(0, 50)),
+          100
+        );
+      },
+    },
   },
+
   dispatch(actionName, ...args) {
     const action = this.transitions[this.state][actionName];
 

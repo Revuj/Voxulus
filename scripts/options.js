@@ -28,10 +28,13 @@ if (annyang) {
   stopWritingCommands.forEach((command) => (commands[command] = stopWriting));
   startSearchCommands.forEach((command) => (commands[command] = startSearch));
   eraseStuffCommands.forEach((command) => (commands[command] = eraseStuff));
+  commands["scroll up"] = scrollUp;
+  commands["scroll down"] = scrollDown;
+  commands["stop"] = stop;
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
-    voxulus.dispatch("writeStuff", userSaid)
+    voxulus.dispatch("writeStuff", userSaid[0])
   );
 
   async function startWriting() {
@@ -51,6 +54,21 @@ if (annyang) {
 
   async function eraseStuff() {
     voxulus.dispatch("eraseStuff");
+    console.log(voxulus);
+  }
+
+  async function scrollUp() {
+    voxulus.dispatch("scrollUp");
+    console.log(voxulus);
+  }
+
+  async function scrollDown() {
+    voxulus.dispatch("scrollDown");
+    console.log(voxulus.speed);
+  }
+
+  async function stop() {
+    voxulus.dispatch("stop");
     console.log(voxulus);
   }
 
