@@ -1,3 +1,15 @@
+import voxulus from "./voxulus.js";
+
+let startWritingCommands = ["start writing", "begin writing"];
+let stopWritingCommands = ["stop writing", "stop search"];
+let startSearchCommands = [
+  "start search",
+  "start searching",
+  "open tab",
+  "new tab",
+];
+let eraseStuffCommands = ["erase", "delete", "undo"];
+
 navigator.mediaDevices
   .getUserMedia({ audio: true })
   .then(function (stream) {
@@ -7,33 +19,39 @@ navigator.mediaDevices
     console.log("No mic for you!");
   });
 
-var messages = ["Hey", "Hi, there!", "Hi!", "Hello"];
-
 if (annyang) {
   annyang.debug();
   console.log("We have annyang!");
 
-  var commands = {
-    Hello: hello,
-    "What is your name": myname,
-    "new tab": newtab,
-    "open tab": newtab,
-  };
+  var commands = {};
+  startWritingCommands.forEach((command) => (commands[command] = startWriting));
+  stopWritingCommands.forEach((command) => (commands[command] = stopWriting));
+  startSearchCommands.forEach((command) => (commands[command] = startSearch));
+  eraseStuffCommands.forEach((command) => (commands[command] = eraseStuff));
 
-  function hello() {
-    var randomIndex = Math.round(Math.random() * messages.length);
-    console.log(
-      `%c ${messages[randomIndex]}`,
-      "color: green; font-weight:bold;"
-    );
+  // when it's not a command
+  annyang.addCallback("resultNoMatch", (userSaid) =>
+    voxulus.dispatch("writeStuff", userSaid)
+  );
+
+  async function startWriting() {
+    voxulus.dispatch("startWriting");
+    console.log(voxulus);
   }
 
-  function myname() {
-    console.log("My name is Billy!");
+  async function startSearch() {
+    voxulus.dispatch("startSearch");
+    console.log(voxulus);
   }
 
-  function newtab() {
-    window.open("", "_blank");
+  async function stopWriting() {
+    voxulus.dispatch("stopWriting");
+    console.log(voxulus);
+  }
+
+  async function eraseStuff() {
+    voxulus.dispatch("eraseStuff");
+    console.log(voxulus);
   }
 
   // Add Commands
