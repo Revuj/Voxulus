@@ -30,9 +30,10 @@ if (annyang) {
   eraseStuffCommands.forEach((command) => (commands[command] = eraseStuff));
 
   // when it's not a command
-  annyang.addCallback("resultNoMatch", (userSaid) =>
-    voxulus.dispatch("writeStuff", userSaid)
-  );
+  annyang.addCallback("resultNoMatch", (userSaid) => {
+    console.log(userSaid);
+    voxulus.dispatch("writeStuff", userSaid[0]);
+  });
 
   async function startWriting() {
     voxulus.dispatch("startWriting");
