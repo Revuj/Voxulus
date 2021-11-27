@@ -9,71 +9,45 @@ navigator.mediaDevices
     console.log("No mic for you!");
   });
 
-async function getCurrentTab() {
-  let queryOptions = { active: true, currentWindow: true };
-  let [tab] = await chrome.tabs.query(queryOptions);
-  return tab;
-}
-
 if (annyang) {
   annyang.debug();
   console.log("We have annyang!");
 
   var commands = {
-    "new tab": newtab,
-    "open tab": newtab,
     "start writing": startWriting,
     "stop writing": stopWriting,
+    "stop search": stopWriting,
+    "new tab": startSearch,
+    "open tab": startSearch,
+    "start search": startSearch,
     erase: eraseStuff,
     delete: eraseStuff,
     undo: eraseStuff,
-    "start search": writeSearch,
-  };
-
-  let writeText = async (userSaid) => {
-    let tab = await getCurrentTab();
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: writeStuff,
-      args: [userSaid, voxulus],
-    });
   };
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
-    writeText.apply(null, userSaid)
+    voxulus.dispatch("writeStuff", userSaid)
   );
 
-  function newtab() {
-    window.open("", "_blank");
+  async function startWriting() {
+    voxulus.dispatch("startWriting");
+    console.log(voxulus);
   }
 
-  async function startWriting() {
-    voxulus.state = "writing";
+  async function startSearch() {
+    voxulus.dispatch("startSearch");
     console.log(voxulus);
   }
 
   async function stopWriting() {
-    voxulus.state = "start";
+    voxulus.dispatch("stopWriting");
     console.log(voxulus);
   }
 
-  async function writeStuff(userSaid, voxulus) {
-    if (voxulus.state === "writing")
-      document.execCommand("insertText", false, userSaid);
-  }
-
   async function eraseStuff() {
-    let tab = await getCurrentTab();
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: () => document.execCommand("undo"),
-    });
-  }
-
-  function writeSearch() {
-    let q = "nice meme";
-    window.open("http://google.com/search?q=" + q);
+    voxulus.dispatch("eraseStuff");
+    console.log(voxulus);
   }
 
   // Add Commands
