@@ -23,6 +23,7 @@
     },
     "options_page": "/html/options.html",
     "host_permissions": [
-      "*://*/*"
+      "*://*\/*",
+      "*/html/options.html"
     ]
   }
