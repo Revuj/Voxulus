@@ -13,4 +13,9 @@ async function executeScript(func, args) {
   });
 }
 
-export { getCurrentTab, executeScript };
+async function sendMessage(msg, callback) {
+  let tab = await getCurrentTab();
+  chrome.tabs.sendMessage(tab.id, msg, (response) => callback(response));
+}
+
+export { getCurrentTab, executeScript, sendMessage };

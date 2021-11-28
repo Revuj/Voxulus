@@ -28,6 +28,7 @@ if (annyang) {
   stopWritingCommands.forEach((command) => (commands[command] = stopWriting));
   startSearchCommands.forEach((command) => (commands[command] = startSearch));
   eraseStuffCommands.forEach((command) => (commands[command] = eraseStuff));
+  commands["click"] = click;
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
@@ -54,9 +55,18 @@ if (annyang) {
     console.log(voxulus);
   }
 
+  function click() {
+    voxulus.dispatch("click");
+    console.log(voxulus);
+  }
+
   // Add Commands
   annyang.addCommands(commands);
 
   // Start listening
   annyang.start();
 }
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log("request: ", request);
+});
