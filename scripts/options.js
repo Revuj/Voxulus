@@ -9,6 +9,7 @@ let startSearchCommands = [
   "new tab",
 ];
 let eraseStuffCommands = ["erase", "delete", "undo"];
+let fasterCommand = ["faster", "father", "fast"];
 
 navigator.mediaDevices
   .getUserMedia({ audio: true })
@@ -31,6 +32,8 @@ if (annyang) {
   commands["scroll up"] = scrollUp;
   commands["scroll down"] = scrollDown;
   commands["stop"] = stop;
+  fasterCommand.forEach((command) => (commands[command] = faster));
+  commands["slower"] = slower;
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
@@ -64,11 +67,21 @@ if (annyang) {
 
   async function scrollDown() {
     voxulus.dispatch("scrollDown");
-    console.log(voxulus.speed);
+    console.log(voxulus);
   }
 
   async function stop() {
     voxulus.dispatch("stop");
+    console.log(voxulus);
+  }
+
+  async function faster() {
+    voxulus.dispatch("faster");
+    console.log(voxulus);
+  }
+
+  async function slower() {
+    voxulus.dispatch("slower");
     console.log(voxulus);
   }
 

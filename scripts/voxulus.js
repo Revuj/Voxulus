@@ -2,9 +2,15 @@ import { executeScript } from "./utilities.js";
 
 let scroll;
 
+const setNewInterval = (speed) => {
+  scroll = setInterval(
+    () => executeScript((s) => window.scrollBy(0, s), [speed]),
+    100
+  );
+};
+
 const machine = {
   state: "IDLE",
-  speed: 50,
   transitions: {
     IDLE: {
       startWriting() {
@@ -18,17 +24,13 @@ const machine = {
       },
       async scrollDown() {
         this.state = "SCROLL_DOWN";
-        scroll = setInterval(
-          () => executeScript(() => window.scrollBy(0, 50)),
-          100
-        );
+        this.speed = 50;
+        setNewInterval(this.speed);
       },
       async scrollUp() {
         this.state = "SCROLL_UP";
-        scroll = setInterval(
-          () => executeScript(() => window.scrollBy(0, -50)),
-          100
-        );
+        this.speed = 50;
+        setNewInterval(-this.speed);
       },
     },
     WRITING: {
@@ -65,10 +67,17 @@ const machine = {
       async scrollUp() {
         clearInterval(scroll);
         this.state = "SCROLL_UP";
-        scroll = setInterval(
-          () => executeScript(() => window.scrollBy(0, -50)),
-          100
-        );
+        setNewInterval(-this.speed);
+      },
+      async faster() {
+        this.speed *= 1.5;
+        clearInterval(scroll);
+        setNewInterval(this.speed);
+      },
+      async slower() {
+        this.speed *= 0.5;
+        clearInterval(scroll);
+        setNewInterval(this.speed);
       },
     },
     SCROLL_UP: {
@@ -79,10 +88,17 @@ const machine = {
       async scrollDown() {
         clearInterval(scroll);
         this.state = "SCROLL_DOWN";
-        scroll = setInterval(
-          () => executeScript(() => window.scrollBy(0, 50)),
-          100
-        );
+        setNewInterval(this.speed);
+      },
+      async faster() {
+        this.speed *= 1.5;
+        clearInterval(scroll);
+        setNewInterval(-this.speed);
+      },
+      async slower() {
+        this.speed *= 0.5;
+        clearInterval(scroll);
+        setNewInterval(-this.speed);
       },
     },
   },
@@ -100,5 +116,5 @@ const machine = {
 };
 
 const voxulus = Object.create(machine);
-
+voxulus.speed = 50;
 export default voxulus;
