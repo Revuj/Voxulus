@@ -1,4 +1,4 @@
-import { executeScript } from "./utilities.js";
+import { executeScript, sendMessage } from "./utilities.js";
 
 let scroll;
 
@@ -21,6 +21,18 @@ const machine = {
       },
       async eraseStuff() {
         executeScript(() => document.execCommand("undo"));
+      },
+      click() {
+        sendMessage({ type: "mouseCoords" }, (response) => {
+          if (response.xPos < 0 || response.yPos < 0) return;
+          executeScript(
+            (xPos, yPos) => {
+              const elemet = document.elementFromPoint(xPos, yPos);
+              elemet.click();
+            },
+            [response.xPos, response.yPos]
+          );
+        });
       },
       async scrollDown() {
         this.state = "SCROLL_DOWN";

@@ -29,6 +29,7 @@ if (annyang) {
   stopWritingCommands.forEach((command) => (commands[command] = stopWriting));
   startSearchCommands.forEach((command) => (commands[command] = startSearch));
   eraseStuffCommands.forEach((command) => (commands[command] = eraseStuff));
+  commands["click"] = click;
   commands["scroll up"] = scrollUp;
   commands["scroll down"] = scrollDown;
   commands["stop"] = stop;
@@ -58,6 +59,10 @@ if (annyang) {
   async function eraseStuff() {
     voxulus.dispatch("eraseStuff");
     console.log(voxulus);
+  }
+
+  async function click() {
+    voxulus.dispatch("click");
   }
 
   async function scrollUp() {
@@ -91,3 +96,7 @@ if (annyang) {
   // Start listening
   annyang.start();
 }
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log("request: ", request);
+});
