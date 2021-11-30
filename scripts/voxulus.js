@@ -1,5 +1,14 @@
 import { executeScript } from "./utilities.js";
 
+let scroll;
+
+const setNewInterval = (speed) => {
+  scroll = setInterval(
+    () => executeScript((s) => window.scrollBy(0, s), [speed]),
+    100
+  );
+};
+
 const machine = {
   state: "IDLE",
   transitions: {
@@ -12,6 +21,16 @@ const machine = {
       },
       async eraseStuff() {
         executeScript(() => document.execCommand("undo"));
+      },
+      async scrollDown() {
+        this.state = "SCROLL_DOWN";
+        this.speed = 50;
+        setNewInterval(this.speed);
+      },
+      async scrollUp() {
+        this.state = "SCROLL_UP";
+        this.speed = 50;
+        setNewInterval(-this.speed);
       },
     },
     WRITING: {
@@ -40,7 +59,50 @@ const machine = {
         this.state = "IDLE";
       },
     },
+    SCROLL_DOWN: {
+      stop() {
+        clearInterval(scroll);
+        this.state = "IDLE";
+      },
+      async scrollUp() {
+        clearInterval(scroll);
+        this.state = "SCROLL_UP";
+        setNewInterval(-this.speed);
+      },
+      async faster() {
+        this.speed *= 1.5;
+        clearInterval(scroll);
+        setNewInterval(this.speed);
+      },
+      async slower() {
+        this.speed *= 0.5;
+        clearInterval(scroll);
+        setNewInterval(this.speed);
+      },
+    },
+    SCROLL_UP: {
+      stop() {
+        clearInterval(scroll);
+        this.state = "IDLE";
+      },
+      async scrollDown() {
+        clearInterval(scroll);
+        this.state = "SCROLL_DOWN";
+        setNewInterval(this.speed);
+      },
+      async faster() {
+        this.speed *= 1.5;
+        clearInterval(scroll);
+        setNewInterval(-this.speed);
+      },
+      async slower() {
+        this.speed *= 0.5;
+        clearInterval(scroll);
+        setNewInterval(-this.speed);
+      },
+    },
   },
+
   dispatch(actionName, ...args) {
     const action = this.transitions[this.state][actionName];
 
@@ -54,5 +116,5 @@ const machine = {
 };
 
 const voxulus = Object.create(machine);
-
+voxulus.speed = 50;
 export default voxulus;
