@@ -63,6 +63,15 @@ const machine = {
         let tabIdToSelect = (await getTabByIndex(parseInt(tabNumber)-1)).id;
         chrome.tabs.update(tabIdToSelect, {active: true});
       },
+      async reload() {
+        chrome.tabs.reload();
+      },
+      async goBack() {
+        chrome.tabs.goBack();
+      },
+      async goForward() {
+        chrome.tabs.goForward();
+      },
     },
     WRITING: {
       stopWriting() {
