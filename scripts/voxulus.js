@@ -1,4 +1,4 @@
-import { executeScript, sendMessage } from "./utilities.js";
+import { executeScript, getCurrentTab, getTabByIndex, sendMessage } from "./utilities.js";
 
 let scroll;
 
@@ -49,6 +49,15 @@ const machine = {
       },
       async zoomOut() {
         chrome.tabs.setZoom(await chrome.tabs.getZoom()/1.15);
+      },
+      async closeTab(tabNumber) { // undefined for current
+        let tabIdToClose;
+        if (tabNumber !== undefined) {
+          tabIdToClose = (await getTabByIndex(parseInt(tabNumber)-1)).id;
+        } else {
+          tabIdToClose = (await getCurrentTab()).id;
+        }
+        chrome.tabs.remove(tabIdToClose);
       },
     },
     WRITING: {
@@ -125,7 +134,7 @@ const machine = {
     const action = this.transitions[this.state][actionName];
 
     if (action) {
-      action.call(this, args);
+      action.call(this, ...args);
     } else {
       console.log("invalid action");
       console.log(this.state);
