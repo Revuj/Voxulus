@@ -44,6 +44,12 @@ const machine = {
         this.speed = 50;
         setNewInterval(-this.speed);
       },
+      async zoomIn() {
+        chrome.tabs.setZoom(await chrome.tabs.getZoom()*1.15);
+      },
+      async zoomOut() {
+        chrome.tabs.setZoom(await chrome.tabs.getZoom()/1.15);
+      },
     },
     WRITING: {
       stopWriting() {

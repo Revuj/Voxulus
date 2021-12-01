@@ -35,6 +35,8 @@ if (annyang) {
   commands["stop"] = stop;
   fasterCommand.forEach((command) => (commands[command] = faster));
   commands["slower"] = slower;
+  commands["zoom in"] = zoomIn;
+  commands["zoom out"] = zoomOut;
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
@@ -87,6 +89,16 @@ if (annyang) {
 
   async function slower() {
     voxulus.dispatch("slower");
+    console.log(voxulus);
+  }
+
+  async function zoomIn() {
+    voxulus.dispatch("zoomIn");
+    console.log(voxulus);
+  }
+
+  async function zoomOut() {
+    voxulus.dispatch("zoomOut");
     console.log(voxulus);
   }
 
