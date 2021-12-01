@@ -39,6 +39,7 @@ if (annyang) {
   commands["zoom out"] = zoomOut;
   commands["close tab"] = closeTab;
   commands["close tab :number"] = {'regexp': /^close tab (1|2|3|4|5|6|7|8|9)$/, 'callback': closeTab}
+  commands["select tab :number"] = {'regexp': /^select tab (1|2|3|4|5|6|7|8|9)$/, 'callback': selectTab}
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
@@ -106,6 +107,11 @@ if (annyang) {
 
   async function closeTab(number) {
     voxulus.dispatch("closeTab", number);
+    console.log(voxulus);
+  }
+
+  async function selectTab(number) {
+    voxulus.dispatch("selectTab", number);
     console.log(voxulus);
   }
 

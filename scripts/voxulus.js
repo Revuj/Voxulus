@@ -59,6 +59,10 @@ const machine = {
         }
         chrome.tabs.remove(tabIdToClose);
       },
+      async selectTab(tabNumber) {
+        let tabIdToSelect = (await getTabByIndex(parseInt(tabNumber)-1)).id;
+        chrome.tabs.update(tabIdToSelect, {active: true});
+      },
     },
     WRITING: {
       stopWriting() {
