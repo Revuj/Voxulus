@@ -43,6 +43,7 @@ if (annyang) {
   commands["reload"] = reload;
   commands["go back"] = goBack;
   commands["go forward"] = goForward;
+  commands["submit"] = submit;
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
@@ -130,6 +131,11 @@ if (annyang) {
 
   async function goForward() {
     voxulus.dispatch("goForward");
+    console.log(voxulus);
+  }
+
+  async function submit() {
+    voxulus.dispatch("submit");
     console.log(voxulus);
   }
 

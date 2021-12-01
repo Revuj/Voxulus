@@ -72,6 +72,35 @@ const machine = {
       async goForward() {
         chrome.tabs.goForward();
       },
+      async submit() {
+        executeScript(() => {
+          let after = false;
+          let found = false;
+          function deepFirstSearch(node) {  
+            if (node) {     
+                if (found)
+                  return;
+                var children = node.children;   
+                if (after && (node.getAttribute('type') === 'submit' ||
+                              node.tagName === 'BUTTON' ||
+                              node.tagName === 'A')){
+                  console.log("Button");
+                  node.click();
+                  found = true;
+                }
+                if (node === document.activeElement){
+                  console.log("AFTER");
+                  after = true;
+                } 
+                for (var i = 0; i < children.length; i++) 
+                  deepFirstSearch(children[i]);    
+            }     
+          }
+          deepFirstSearch(document)
+          },
+          []
+        );
+      },
     },
     WRITING: {
       stopWriting() {
