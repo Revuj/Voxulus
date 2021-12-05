@@ -35,6 +35,10 @@ if (annyang) {
   commands["stop"] = stop;
   fasterCommand.forEach((command) => (commands[command] = faster));
   commands["slower"] = slower;
+  commands["pause"] = pause;
+  commands["play"] = play;
+  commands["volume up"] = volumeUp;
+  commands["volume down"] = volumeDown;
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
@@ -87,6 +91,26 @@ if (annyang) {
 
   async function slower() {
     voxulus.dispatch("slower");
+    console.log(voxulus);
+  }
+
+  async function pause() {
+    voxulus.dispatch("pause");
+    console.log(voxulus);
+  }
+
+  async function play() {
+    voxulus.dispatch("play");
+    console.log(voxulus);
+  }
+
+  async function volumeUp() {
+    voxulus.dispatch("volumeUp");
+    console.log(voxulus);
+  }
+
+  async function volumeDown() {
+    voxulus.dispatch("volumeDown");
     console.log(voxulus);
   }
 

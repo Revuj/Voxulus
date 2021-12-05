@@ -1,4 +1,4 @@
-import { executeScript, sendMessage } from "./utilities.js";
+import { executeScript, getMouseCoords } from "./utilities.js";
 
 let scroll;
 
@@ -7,6 +7,17 @@ const setNewInterval = (speed) => {
     () => executeScript((s) => window.scrollBy(0, s), [speed]),
     100
   );
+};
+
+const mouseClick = (xPos, yPos) => {
+  const elemet = document.elementFromPoint(xPos, yPos);
+  elemet.click();
+};
+
+const getVideoAndAudio = () => {
+  const video = document.getElementsByTagName("video");
+  const audio = document.getElementsByTagName("audio");
+  return [].concat(...video, ...audio);
 };
 
 const machine = {
@@ -22,17 +33,10 @@ const machine = {
       async eraseStuff() {
         executeScript(() => document.execCommand("undo"));
       },
-      click() {
-        sendMessage({ type: "mouseCoords" }, (response) => {
-          if (response.xPos < 0 || response.yPos < 0) return;
-          executeScript(
-            (xPos, yPos) => {
-              const elemet = document.elementFromPoint(xPos, yPos);
-              elemet.click();
-            },
-            [response.xPos, response.yPos]
-          );
-        });
+      async click() {
+        getMouseCoords({ type: "mouseCoords" }, (response) =>
+          executeScript(mouseClick, [response.xPos, response.yPos])
+        );
       },
       async scrollDown() {
         this.state = "SCROLL_DOWN";
@@ -43,6 +47,30 @@ const machine = {
         this.state = "SCROLL_UP";
         this.speed = 50;
         setNewInterval(-this.speed);
+      },
+      async pause() {
+        executeScript(() => {
+          const elements = getVideoAndAudio();
+          elements.forEach((e) => e.pause());
+        });
+      },
+      async play() {
+        executeScript(() => {
+          const elements = getVideoAndAudio();
+          elements.forEach((e) => e.play());
+        });
+      },
+      async volumeUp() {
+        executeScript(() => {
+          const elements = getVideoAndAudio();
+          elements.forEach((e) => (e.volume = Math.min(1, e.volume + 0.2)));
+        });
+      },
+      async volumeDown() {
+        executeScript(() => {
+          const elements = getVideoAndAudio();
+          elements.forEach((e) => (e.volume = Math.max(0, e.volume - 0.2)));
+        });
       },
     },
     WRITING: {
