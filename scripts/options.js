@@ -9,7 +9,8 @@ let startSearchCommands = [
   "new tab",
 ];
 let eraseStuffCommands = ["erase", "delete", "undo"];
-let fasterCommand = ["faster", "father", "fast"];
+let fasterCommands = ["faster", "father", "fast"];
+let mediaForwardCommands = ["skip *query seconds", "forward *query seconds"];
 
 navigator.mediaDevices
   .getUserMedia({ audio: true })
@@ -33,12 +34,14 @@ if (annyang) {
   commands["scroll up"] = scrollUp;
   commands["scroll down"] = scrollDown;
   commands["stop"] = stop;
-  fasterCommand.forEach((command) => (commands[command] = faster));
+  fasterCommands.forEach((command) => (commands[command] = faster));
   commands["slower"] = slower;
   commands["pause"] = pause;
   commands["play"] = play;
   commands["volume up"] = volumeUp;
   commands["volume down"] = volumeDown;
+  mediaForwardCommands.forEach((command) => (commands[command] = mediaForward));
+  commands["back *query seconds"] = mediaBackward;
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
@@ -111,6 +114,16 @@ if (annyang) {
 
   async function volumeDown() {
     voxulus.dispatch("volumeDown");
+    console.log(voxulus);
+  }
+
+  async function mediaForward(query) {
+    voxulus.dispatch("mediaForward", query);
+    console.log(voxulus);
+  }
+
+  async function mediaBackward(query) {
+    voxulus.dispatch("mediaBackward", query);
     console.log(voxulus);
   }
 

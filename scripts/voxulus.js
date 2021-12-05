@@ -10,14 +10,9 @@ const setNewInterval = (speed) => {
 };
 
 const mouseClick = (xPos, yPos) => {
-  const elemet = document.elementFromPoint(xPos, yPos);
-  elemet.click();
-};
-
-const getVideoAndAudio = () => {
-  const video = document.getElementsByTagName("video");
-  const audio = document.getElementsByTagName("audio");
-  return [].concat(...video, ...audio);
+  const element = document.elementFromPoint(xPos, yPos);
+  console.log(element);
+  element.click();
 };
 
 const machine = {
@@ -50,27 +45,61 @@ const machine = {
       },
       async pause() {
         executeScript(() => {
-          const elements = getVideoAndAudio();
+          const video = document.getElementsByTagName("video");
+          const audio = document.getElementsByTagName("audio");
+          const elements = [].concat(...video, ...audio);
           elements.forEach((e) => e.pause());
         });
       },
       async play() {
         executeScript(() => {
-          const elements = getVideoAndAudio();
+          const video = document.getElementsByTagName("video");
+          const audio = document.getElementsByTagName("audio");
+          const elements = [].concat(...video, ...audio);
           elements.forEach((e) => e.play());
         });
       },
       async volumeUp() {
         executeScript(() => {
-          const elements = getVideoAndAudio();
+          const video = document.getElementsByTagName("video");
+          const audio = document.getElementsByTagName("audio");
+          const elements = [].concat(...video, ...audio);
           elements.forEach((e) => (e.volume = Math.min(1, e.volume + 0.2)));
         });
       },
       async volumeDown() {
         executeScript(() => {
-          const elements = getVideoAndAudio();
+          const video = document.getElementsByTagName("video");
+          const audio = document.getElementsByTagName("audio");
+          const elements = [].concat(...video, ...audio);
           elements.forEach((e) => (e.volume = Math.max(0, e.volume - 0.2)));
         });
+      },
+      async mediaBackward(query) {
+        const seconds = parseFloat(query);
+        if (seconds < 0) return;
+        executeScript(
+          (seconds) => {
+            const video = document.getElementsByTagName("video");
+            const audio = document.getElementsByTagName("audio");
+            const elements = [].concat(...video, ...audio);
+            elements.forEach((e) => (e.currentTime -= seconds));
+          },
+          [seconds]
+        );
+      },
+      async mediaForward(query) {
+        const seconds = parseFloat(query);
+        if (seconds < 0) return;
+        executeScript(
+          (seconds) => {
+            const video = document.getElementsByTagName("video");
+            const audio = document.getElementsByTagName("audio");
+            const elements = [].concat(...video, ...audio);
+            elements.forEach((e) => (e.currentTime += seconds));
+          },
+          [seconds]
+        );
       },
     },
     WRITING: {
