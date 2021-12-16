@@ -9,7 +9,8 @@ let startSearchCommands = [
   "new tab",
 ];
 let eraseStuffCommands = ["erase", "delete", "undo"];
-let fasterCommand = ["faster", "father", "fast"];
+let fasterCommands = ["faster", "father", "fast"];
+let mediaForwardCommands = ["skip *query seconds", "forward *query seconds"];
 
 navigator.mediaDevices
   .getUserMedia({ audio: true })
@@ -33,13 +34,25 @@ if (annyang) {
   commands["scroll up"] = scrollUp;
   commands["scroll down"] = scrollDown;
   commands["stop"] = stop;
-  fasterCommand.forEach((command) => (commands[command] = faster));
+  fasterCommands.forEach((command) => (commands[command] = faster));
   commands["slower"] = slower;
+  commands["pause"] = pause;
+  commands["play"] = play;
+  commands["volume up"] = volumeUp;
+  commands["volume down"] = volumeDown;
+  mediaForwardCommands.forEach((command) => (commands[command] = mediaForward));
+  commands["back *query seconds"] = mediaBackward;
   commands["zoom in"] = zoomIn;
   commands["zoom out"] = zoomOut;
   commands["close tab"] = closeTab;
-  commands["close tab :number"] = {'regexp': /^close tab (1|2|3|4|5|6|7|8|9)$/, 'callback': closeTab}
-  commands["select tab :number"] = {'regexp': /^select tab (1|2|3|4|5|6|7|8|9)$/, 'callback': selectTab}
+  commands["close tab :number"] = {
+    regexp: /^close tab (1|2|3|4|5|6|7|8|9)$/,
+    callback: closeTab,
+  };
+  commands["select tab :number"] = {
+    regexp: /^select tab (1|2|3|4|5|6|7|8|9)$/,
+    callback: selectTab,
+  };
   commands["reload"] = reload;
   commands["go back"] = goBack;
   commands["go forward"] = goForward;
@@ -97,6 +110,36 @@ if (annyang) {
 
   async function slower() {
     voxulus.dispatch("slower");
+    console.log(voxulus);
+  }
+
+  async function pause() {
+    voxulus.dispatch("pause");
+    console.log(voxulus);
+  }
+
+  async function play() {
+    voxulus.dispatch("play");
+    console.log(voxulus);
+  }
+
+  async function volumeUp() {
+    voxulus.dispatch("volumeUp");
+    console.log(voxulus);
+  }
+
+  async function volumeDown() {
+    voxulus.dispatch("volumeDown");
+    console.log(voxulus);
+  }
+
+  async function mediaForward(query) {
+    voxulus.dispatch("mediaForward", query);
+    console.log(voxulus);
+  }
+
+  async function mediaBackward(query) {
+    voxulus.dispatch("mediaBackward", query);
     console.log(voxulus);
   }
 

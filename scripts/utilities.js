@@ -19,9 +19,12 @@ async function executeScript(func, args) {
   });
 }
 
-async function sendMessage(msg, callback) {
+async function getMouseCoords(msg, callback) {
   let tab = await getCurrentTab();
-  chrome.tabs.sendMessage(tab.id, msg, (response) => callback(response));
+  chrome.tabs.sendMessage(tab.id, msg, (response) => {
+    if (response.xPos < 0 || response.yPos < 0) return;
+    callback(response);
+  });
 }
 
-export { getCurrentTab, getTabByIndex, executeScript, sendMessage };
+export { getCurrentTab, getTabByIndex, executeScript, getMouseCoords };
