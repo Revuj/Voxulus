@@ -1,4 +1,4 @@
-import { executeScript, sendMessage } from "./utilities.js";
+import { executeScript, getCurrentTab, getTabByIndex, sendMessage } from "./utilities.js";
 
 let scroll;
 
@@ -43,6 +43,98 @@ const machine = {
         this.state = "SCROLL_UP";
         this.speed = 50;
         setNewInterval(-this.speed);
+      },
+      async zoomIn() {
+        chrome.tabs.setZoom(await chrome.tabs.getZoom()*1.15);
+      },
+      async zoomOut() {
+        chrome.tabs.setZoom(await chrome.tabs.getZoom()/1.15);
+      },
+      async closeTab(tabNumber) { // undefined for current
+        let tabIdToClose;
+        if (tabNumber !== undefined) {
+          tabIdToClose = (await getTabByIndex(parseInt(tabNumber)-1)).id;
+        } else {
+          tabIdToClose = (await getCurrentTab()).id;
+        }
+        chrome.tabs.remove(tabIdToClose);
+      },
+      async selectTab(tabNumber) {
+        let tabIdToSelect = (await getTabByIndex(parseInt(tabNumber)-1)).id;
+        chrome.tabs.update(tabIdToSelect, {active: true});
+      },
+      async reload() {
+        chrome.tabs.reload();
+      },
+      async goBack() {
+        chrome.tabs.goBack();
+      },
+      async goForward() {
+        chrome.tabs.goForward();
+      },
+      async submit() {
+        executeScript(() => {
+          let after = false;
+          let found = false;
+          function deepFirstSearch(node) {  
+            if (node) {     
+                if (found)
+                  return;
+                if (node === document.activeElement){
+                  after = true;
+                } 
+                if (after && (node.getAttribute('type') === 'submit' ||
+                              node.tagName === 'BUTTON' ||
+                              node.tagName === 'A')){
+                  node.click();
+                  found = true;
+                }
+                var children = node.children;   
+                for (var i = 0; i < children.length; i++) 
+                  deepFirstSearch(children[i]);    
+            }     
+          }
+          deepFirstSearch(document)
+          },
+          []
+        );
+      },
+      async next() {
+        executeScript(() => {
+
+          var sheet = document.createElement('style')
+          sheet.innerHTML = ".voxulus-border {border: 2px solid lightblue;}";
+          document.body.appendChild(sheet);
+
+          let after = false;
+          let found = false;
+          function deepFirstSearch(node) {  
+            if (node) {     
+                if (found)
+                  return;
+                if (after && (node.getAttribute('type') === 'submit' ||
+                              node.tagName === 'BUTTON' ||
+                              node.tagName === 'A' ||
+                              node.tagName === 'INPUT')){
+                  node.focus();
+                  node.classList.add("voxulus-border");
+                  found = true;
+                  setTimeout(() => {
+                    node.classList.remove("voxulus-border");
+                  },3000);
+                }
+                if (node === document.activeElement){
+                  after = true;
+                } 
+                var children = node.children;   
+                for (var i = 0; i < children.length; i++) 
+                  deepFirstSearch(children[i]);    
+            }     
+          }
+          deepFirstSearch(document)
+          },
+          []
+        );
       },
     },
     WRITING: {
@@ -119,7 +211,7 @@ const machine = {
     const action = this.transitions[this.state][actionName];
 
     if (action) {
-      action.call(this, args);
+      action.call(this, ...args);
     } else {
       console.log("invalid action");
       console.log(this.state);
@@ -130,3 +222,6 @@ const machine = {
 const voxulus = Object.create(machine);
 voxulus.speed = 50;
 export default voxulus;
+
+// 0 0 0 2px rgba(138, 180, 248, .5);
+

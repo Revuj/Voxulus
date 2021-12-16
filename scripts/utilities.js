@@ -4,6 +4,12 @@ async function getCurrentTab() {
   return tab;
 }
 
+async function getTabByIndex(index) {
+  let queryOptions = { index: index, currentWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
+}
+
 async function executeScript(func, args) {
   let tab = await getCurrentTab();
   chrome.scripting.executeScript({
@@ -18,4 +24,4 @@ async function sendMessage(msg, callback) {
   chrome.tabs.sendMessage(tab.id, msg, (response) => callback(response));
 }
 
-export { getCurrentTab, executeScript, sendMessage };
+export { getCurrentTab, getTabByIndex, executeScript, sendMessage };
