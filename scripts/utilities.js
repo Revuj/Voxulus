@@ -4,6 +4,12 @@ async function getCurrentTab() {
   return tab;
 }
 
+async function getTabByIndex(index) {
+  let queryOptions = { index: index, currentWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
+}
+
 async function executeScript(func, args) {
   let tab = await getCurrentTab();
   chrome.scripting.executeScript({
@@ -21,4 +27,4 @@ async function getMouseCoords(msg, callback) {
   });
 }
 
-export { getCurrentTab, executeScript, getMouseCoords };
+export { getCurrentTab, getTabByIndex, executeScript, getMouseCoords };
