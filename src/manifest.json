@@ -1,0 +1,22 @@
+{
+  "name": "Voxulus",
+  "options_page": "options.html",
+  "background": {
+    "page": "background.html"
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon-34.png"
+  },
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "cross_origin_embedder_policy": {
+    "value": "require-corp"
+  },
+  "cross_origin_opener_policy": {
+    "value": "same-origin"
+  },
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' https://cdn.seeso.io/2.4.0/simd/seeso.js blob: 'unsafe-eval'; object-src 'self'"
+}
