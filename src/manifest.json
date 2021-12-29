@@ -17,6 +17,7 @@
   "cross_origin_opener_policy": {
     "value": "same-origin"
   },
+  "web_accessible_resources": ["options.html"],
   "manifest_version": 2,
   "content_security_policy": "script-src 'self' https://cdn.seeso.io/2.4.0/simd/seeso.js blob: 'unsafe-eval'; object-src 'self'"
 }

@@ -25,13 +25,14 @@ function showGazeDotOnDom(gazeInfo) {
 }
 
 function showGaze(gazeInfo) {
+  console.log("Start gaze");
   showGazeInfoOnDom(gazeInfo);
   showGazeDotOnDom(gazeInfo);
 }
 
 function onClickCalibrationBtn() {
   const userId = "YOUR_USER_ID"; // ex) 5e9easf293
-  const redirectUrl = "http://localhost:8082";
+  const redirectUrl = chrome.extension.getURL("options.html");
   const calibrationPoint = 5;
   EasySeeSo.openCalibrationPage(licenseKey, userId, redirectUrl, calibrationPoint);
 }
