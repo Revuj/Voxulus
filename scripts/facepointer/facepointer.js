@@ -1,0 +1,381 @@
+/**
+ * (∩｀-´)⊃━☆ﾟ.*・｡ﾟ Facepointer
+ *
+ * @usage const fp = new Facepointer(config);
+ */
+class Facepointer {
+  /**
+   * @param {Object} config The config object (see README)
+   */
+  constructor(config = {}) {
+    this.setup(config);
+  }
+
+  /**
+   * Triggers an event on the document
+   * @param {String} eventName The event name, appended as `facepointer-${eventName}`
+   */
+  emit(eventName, detail = null) {
+    const event = new CustomEvent(eventName, detail);
+    document.dispatchEvent(event);
+  }
+
+  /**
+   * Calls a callback on `document` when an event is triggered
+   * @param {String} eventName The `facepointer-${eventName}` to listen to
+   * @param {Function} callback The callback to call
+   */
+  on(eventName, callback) {
+    document.addEventListener(eventName, callback);
+  }
+
+  /**
+   * Starts the tracking loop
+   */
+  start() {
+    if (this.trackerSDK && !this.isStarted) {
+      this.initSDK();
+    } else if (!this.isStarted) {
+      console.warn("Head tracking SDK not loaded yet");
+    }
+  }
+
+  stop() {
+    location.reload();
+  }
+
+  /**
+   * The main tracking loop
+   * - Also runs plugins
+   */
+  track() {
+    this.head = {
+      rotation: this.trackerSDK.get_rotationStabilized(),
+      translation: this.trackerSDK.get_positionScale(),
+      morphs: this.trackerSDK.get_morphTargetInfluencesStabilized(),
+    };
+    this.updatePointer();
+
+    Object.keys(Facepointer.plugins).forEach((key) => {
+      Facepointer.plugins[key](this.pointer, this);
+    });
+
+    requestAnimationFrame(() => this.track());
+  }
+}
+
+/**
+ * Setup static properties
+ */
+// Set the lib path to whereever this file is, this is required for loading dependencies correctly
+Facepointer.libSrc = "./";
+Facepointer.plugins = {};
+
+// Contains the instances
+Facepointer.instances = [];
+window.Facepointer = Facepointer;
+
+/**
+ * Entry point to setting up this instance
+ */
+Facepointer.prototype.setup = function (config) {
+  this.addListeners(); // @see ./Listeners.js
+  this.cleanConfig(config);
+  this.initProps();
+  this.loadDependencies();
+  this.createDebugger();
+  this.createPointer();
+};
+
+/**
+ * Cleans and sanitizes the config with defaults
+ */
+Facepointer.prototype.cleanConfig = function (config) {
+  this._config = config;
+  config = Object.assign(
+    {
+      // Whether Facepointer should automatically start after instantiation
+      autostart: false,
+      sensitivity: {
+        // A factor to adjust the cursors move speed by
+        xy: 0.7,
+        // How much wider (+) or narrower (-) a smile needs to be to click
+        click: 0,
+      },
+      stabilizer: {
+        // How much stabilization to use: 0 = none, 3 = heavy
+        factor: 1,
+        // Number of frames to stabilizer over
+        buffer: 30,
+      },
+      // Configs specific to plugins
+      plugin: {
+        click: {
+          // Morphs to watch for and their required confidences
+          morphs: {
+            0: 0.25,
+            1: 0.25,
+          },
+        },
+        vertScroll: {
+          // The multiplier to scroll by. Lower numbers are slower
+          scrollSpeed: 0.15,
+          // How many pixels from the the edge to scroll
+          scrollZone: 100,
+        },
+      },
+    },
+    config
+  );
+  this.config = config;
+};
+
+/**
+ * Initialize properties
+ */
+Facepointer.prototype.initProps = function () {
+  Facepointer.instances.push(this);
+  this.id = Facepointer.instances.length;
+  this.trackerSDK = null;
+  this.pointer = {
+    x: 0,
+    y: 0,
+    $el: null,
+    state: "",
+  };
+  this.tween = {
+    x: -1,
+    y: -1,
+    rx: 0,
+    ry: 0,
+    positionList: [],
+  };
+};
+
+/**
+ * Load the Weboji head tracker
+ */
+Facepointer.prototype.loadDependencies = function () {
+  if (!this.trackerSDK) {
+    const $script = document.createElement("script");
+    $script.async = true;
+    $script.onload = () => {
+      document.body.classList.remove("facepointer-loading");
+      this.emit("dependenciesReady");
+    };
+    $script.src = "../scripts/facepointer/js/jeelizFaceTransfer.js";
+    document.getElementsByTagName("head")[0].appendChild($script);
+    document.body.classList.add("facepointer-loading");
+  } else {
+    this.emit("dependenciesReady");
+  }
+};
+
+/**
+ * Creates the debugger, which contains the canvas/video element
+ */
+Facepointer.prototype.createDebugger = function () {
+  const $wrap = document.createElement("DIV");
+  $wrap.classList.add("facepointer-debugger");
+
+  const $canvas = document.createElement("CANVAS");
+  $canvas.classList.add("facepointer-canvas");
+  $canvas.setAttribute("id", `facepointer-canvas-${this.id}`);
+  $wrap.appendChild($canvas);
+
+  document.body.appendChild($wrap);
+};
+
+/**
+ * Creates the cursor/pointer
+ */
+Facepointer.prototype.createPointer = function () {
+  const $pointer = document.createElement("DIV");
+  $pointer.classList.add("facepointer-pointer");
+  this.pointer.$el = $pointer;
+
+  document.body.appendChild($pointer);
+};
+
+/**
+ * Initializes the head tracker SDK
+ */
+Facepointer.prototype.initSDK = function () {
+  const url = "../scripts/facepointer/js/jeelizFaceTransferNNC.json";
+  document.body.classList.add("facepointer-loading");
+  fetch(url)
+    .then((model) => {
+      return model.json();
+    })
+    // Next, let's initialize the head tracker API
+    .then((model) => {
+      this.trackerHelper.size_canvas({
+        canvasId: `facepointer-canvas-${this.id}`,
+        callback: (videoSettings) => {
+          this.trackerSDK.init({
+            canvasId: `facepointer-canvas-${this.id}`,
+            NNCpath: JSON.stringify(model),
+            videoSettings,
+            callbackReady: () => {
+              document.body.classList.remove("facepointer-loading");
+              document.body.classList.add("facepointer-started");
+              this.isStarted = true;
+              this.track();
+            },
+          });
+        },
+      });
+    })
+    .catch(() => console.error(`Couldn't load head tracking model at ${url}`));
+};
+
+/**
+ * Updates the pointer's position given it's head pose
+ */
+Facepointer.prototype.updatePointer = function () {
+  // Calculate X/Y
+  let rx = (this.head.rotation[0] * 180) / Math.PI;
+  let ry = (this.head.rotation[1] * 180) / Math.PI;
+  // Compensation for edge cases
+  rx -= 10;
+  // rx = rx + 1 - 4 * (Math.abs(ry) / 45)
+
+  // Clip
+  const rxMax = 20;
+  const ryMax = 30;
+  if (ry < -ryMax) ry = -ryMax;
+  if (ry > ryMax) ry = ryMax;
+  if (rx < -rxMax - 10) rx = -rxMax;
+  if (rx > rxMax - 10) rx = rxMax;
+
+  // Remove some jittering by tweening the rotations values using TweenMax.
+  // We could do it without TweenMax: 0.15 seconds is 15% of 1 second, so it tween over 4,5 frames (30 fps)
+  // but TweenMax is so convenient for that purpose.
+  let tweenFace = this.tween; // our helper for this face index
+
+  // Stabilizer
+  const stabilizer = [
+    { jitter: 0, tween: 0 },
+    { jitter: 0.5, tween: 0.25 },
+    { jitter: 5, tween: 1.5 },
+    { jitter: 10, tween: 3 },
+  ];
+  // Number of degrees needed to change before forcing a position (vs tweening it eg stabilizing it)
+  const jitterFactor = stabilizer[this.config.stabilizer.factor].jitter;
+  // How long to tween while stabilizing. Higher = slower, lower = faster
+  let tweenDuration = stabilizer[this.config.stabilizer.factor].tween;
+  if (Math.abs(tweenFace.rx - rx) > jitterFactor) {
+    tweenDuration = 0.0;
+  }
+  if (Math.abs(tweenFace.ry - ry) > jitterFactor) {
+    tweenDuration = 0.0;
+  }
+
+  TweenMax.to(tweenFace, tweenDuration, {
+    rx,
+    ry,
+    overwrite: true,
+    ease: "Linear.easeNone",
+  });
+
+  // ryp and rxp are between -1.0 to 1.0 with slower movements on the edges due to Math.sin
+  // Center of screen is (screen.width * 0.5), so eg. 0.5 + 1.0 would be too much over the edge
+  let ryp = Math.sin((tweenFace.ry / ryMax) * (Math.PI * 0.5));
+  let rxp = Math.sin((tweenFace.rx / rxMax) * (Math.PI * 0.5));
+
+  // Let's reduce the values by 40% to go only 10% over the edge...
+  // ryp *= 0.60
+  // rxp *= 0.60
+  rxp *= this.config.sensitivity.xy;
+  ryp *= this.config.sensitivity.xy;
+
+  let _x = window.outerWidth * (ryp + 0.5);
+  // let _y = window.outerHeight * (rxp + 0.5)
+  let _y = window.outerHeight * rxp + window.outerHeight / 4;
+
+  // So at this stage it's a bit less jittering, but to improve the overall placement when the face stands
+  // still, let's average out the position over 1 second (30 frames). This will lead to a bit of delay when
+  // moving the head fast, but it will greatly improve slow movements.
+  if (tweenFace.positionList.length < this.config.stabilizer.buffer) {
+    // add helper objects until the array is full
+    tweenFace.positionList.push({ x: _x, y: _y });
+
+    // leave the cursor in the center to get rid
+    // of the annoying jumping at start up.
+    tweenFace.x = window.outerWidth * 0.5;
+    tweenFace.y = window.outerHeight * 0.5;
+  } else {
+    const position = tweenFace.positionList.shift();
+    position.x = _x;
+    position.y = _y;
+
+    tweenFace.positionList.push(position);
+
+    const numPositions = tweenFace.positionList.length;
+    let avgX = 0;
+    let avgY = 0;
+
+    for (let n = 0; n < numPositions; n++) {
+      avgX += tweenFace.positionList[n].x;
+      avgY += tweenFace.positionList[n].y;
+    }
+
+    tweenFace.x = avgX / numPositions;
+    tweenFace.y = avgY / numPositions;
+  }
+
+  this.pointer.$el.style.left = `${tweenFace.x}px`;
+  this.pointer.$el.style.top = `${tweenFace.y}px`;
+
+  (this.pointer.x = tweenFace.x), (this.pointer.y = tweenFace.y);
+};
+
+/**
+ * Add event listeners
+ */
+Facepointer.prototype.addListeners = function () {
+  // Maybe autostart
+  this.on("dependenciesReady", () => {
+    this.trackerSDK = window.JEEFACETRANSFERAPI;
+    this.trackerHelper = window.JEELIZ_RESIZER;
+    this.config.autostart && this.start();
+  });
+};
+(function () {
+  /**
+   * Listen to clicks on .facepointer-start and .facepointer-stop
+   * - Instantiates a Facepointer if it doesn't exist with autostart...
+   * - ...or Starts the last created Facepointer
+   */
+  document.addEventListener("click", (ev) => {
+    let loops = 0;
+    let $el = ev.target;
+
+    // Loop through each parent, up to 5 times
+    while (loops++ < 5) {
+      // .facepointer-start
+      if ($el.classList.contains("facepointer-start")) {
+        if (Facepointer.instances.length) {
+          Facepointer.instances[Facepointer.instances.length - 1].start();
+        } else {
+          new Facepointer({ autostart: true });
+        }
+        break;
+      }
+
+      // .facepointer-stop
+      if ($el.classList.contains("facepointer-stop")) {
+        location.reload();
+        break;
+      }
+
+      if ($el.parentElement) $el = $el.parentElement;
+      else break;
+    }
+  });
+})();
+
+const fp = new Facepointer({ autostart: true });
+
+console.log(fp);
+console.log("We have facepointer!");

@@ -1,0 +1,54 @@
+$pointerSize = 15px
+
+.facepointer-pointer
+  width $pointerSize
+  height $pointerSize
+  border-radius $pointerSize
+  background red
+  border 3px solid red
+  position fixed
+  top 0
+  left 0
+  z-index 999999
+  display none
+
+.facepointer-started
+  .facepointer-pointer
+    display block
+
+// Loading states
+.facepointer-show-when-loading
+  display none
+
+.facepointer-loading
+  .facepointer-hide-when-loading
+    display none
+
+  .facepointer-show-when-loading
+    display block
+    &a, &button, &span
+      display inline-block
+
+// Buttons
+.facepointer-stop
+  display none
+
+.facepointer-started
+  .facepointer-start
+    display none
+  
+  .facepointer-stop
+    display block
+    &a, &button, &span
+      display inline-block
+
+// Clicked state
+body.facepointer-clicked .facepointer-pointer
+  background #ff0
+  animation shadow-pulse 0.15s 1
+
+@keyframes shadow-pulse
+  0%
+    box-shadow 0 0 0 $pointerSize rgba(255, 0, 0, 0.45)
+  100%
+    box-shadow 0 0 0 $pointerSize * 5 rgba(255, 0, 0, 0)

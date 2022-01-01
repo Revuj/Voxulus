@@ -1,0 +1,76 @@
+.facepointer-pointer {
+  width: 15px;
+  height: 15px;
+  border-radius: 15px;
+  background: red;
+  border: 3px solid red;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999999;
+  display: none;
+}
+.facepointer-started .facepointer-pointer {
+  display: block;
+}
+.facepointer-loading .facepointer-hide-when-loading,
+.facepointer-show-when-loading {
+  display: none;
+}
+.facepointer-loading .facepointer-show-when-loading {
+  display: block;
+}
+.facepointer-loading .facepointer-show-when-loadinga,
+.facepointer-loading .facepointer-show-when-loadingbutton,
+.facepointer-loading .facepointer-show-when-loadingspan {
+  display: inline-block;
+}
+.facepointer-started .facepointer-start,
+.facepointer-stop {
+  display: none;
+}
+.facepointer-started .facepointer-stop {
+  display: block;
+}
+.facepointer-started .facepointer-stopa,
+.facepointer-started .facepointer-stopbutton,
+.facepointer-started .facepointer-stopspan {
+  display: inline-block;
+}
+body.facepointer-clicked .facepointer-pointer {
+  background: #ff0;
+  animation: shadow-pulse 0.15s 1;
+}
+@-moz-keyframes shadow-pulse {
+  0% {
+    box-shadow: 0 0 0 15px rgba(255, 0, 0, 0.45);
+  }
+  to {
+    box-shadow: 0 0 0 75px rgba(255, 0, 0, 0);
+  }
+}
+@-webkit-keyframes shadow-pulse {
+  0% {
+    box-shadow: 0 0 0 15px rgba(255, 0, 0, 0.45);
+  }
+  to {
+    box-shadow: 0 0 0 75px rgba(255, 0, 0, 0);
+  }
+}
+@-o-keyframes shadow-pulse {
+  0% {
+    box-shadow: 0 0 0 15px rgba(255, 0, 0, 0.45);
+  }
+  to {
+    box-shadow: 0 0 0 75px rgba(255, 0, 0, 0);
+  }
+}
+@keyframes shadow-pulse {
+  0% {
+    box-shadow: 0 0 0 15px rgba(255, 0, 0, 0.45);
+  }
+  to {
+    box-shadow: 0 0 0 75px rgba(255, 0, 0, 0);
+  }
+}
+/*# sourceMappingURL=/facepointer.css.map */

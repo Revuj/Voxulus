@@ -1,0 +1,34 @@
+$pageHeight = 10000px
+
+body
+  font-size 18px
+  text-align center
+  padding 0
+  margin 0
+
+  &:before
+    content ''
+    display block
+    width 100%
+    height $pageHeight
+    background url("../favicon.png")
+    opacity 0.05
+    position absolute
+    top 1
+
+article
+  position relative
+  z-index 10
+
+button
+  font-size 36px
+  padding 10px
+  cursor pointer
+
+#paper
+  width 500px
+  max-width 100%
+  height 500px
+  margin auto
+  background #fff
+  box-shadow 0 0 3px rgba(0,0,0,0.35)
