@@ -13,6 +13,13 @@
         "css": ["/styles/facepointer.css"]
         }
     ],
+    "web_accessible_resources": [
+      {
+        "resources": [ "/scripts/facepointer/js/jeelizFaceTransfer.js", "/scripts/facepointer/js/jeelizFaceTransferNNC.json" ],
+        "matches": [ "<all_urls>" ]
+      }
+      
+   ],
     "permissions": ["storage", "declarativeContent", "activeTab", "scripting", "tabs"],
     "action": {
       "default_icon": {

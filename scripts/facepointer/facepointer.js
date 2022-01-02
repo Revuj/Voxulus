@@ -163,7 +163,9 @@ Facepointer.prototype.loadDependencies = function () {
       document.body.classList.remove("facepointer-loading");
       this.emit("dependenciesReady");
     };
-    $script.src = "../scripts/facepointer/js/jeelizFaceTransfer.js";
+
+    $script.src = url_facepointer_js;
+
     document.getElementsByTagName("head")[0].appendChild($script);
     document.body.classList.add("facepointer-loading");
   } else {
@@ -201,7 +203,7 @@ Facepointer.prototype.createPointer = function () {
  * Initializes the head tracker SDK
  */
 Facepointer.prototype.initSDK = function () {
-  const url = "../scripts/facepointer/js/jeelizFaceTransferNNC.json";
+  const url = url_facepointer_json;
   document.body.classList.add("facepointer-loading");
   fetch(url)
     .then((model) => {

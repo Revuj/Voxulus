@@ -26,3 +26,6 @@ const handler = (e) => {
 
 document.addEventListener("mousemove", handler);
 console.log("Tracking mouse moves");
+
+let url_facepointer_js = chrome.runtime.getURL('/scripts/facepointer/js/jeelizFaceTransfer.js');
+let url_facepointer_json = chrome.runtime.getURL('/scripts/facepointer/js/jeelizFaceTransferNNC.json');
