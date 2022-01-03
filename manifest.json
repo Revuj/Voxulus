@@ -9,7 +9,7 @@
     "content_scripts": [
       {
         "matches": ["<all_urls>"],
-        "js": ["/scripts/content.js", "/scripts/facepointer/js/jeelizFaceTransfer.js", "/scripts/facepointer/facepointer.js"],
+        "js": ["/scripts/facepointer/js/jeelizFaceTransfer.js", "/scripts/facepointer/facepointer.js"],
         "css": ["/styles/facepointer.css"]
         }
     ],

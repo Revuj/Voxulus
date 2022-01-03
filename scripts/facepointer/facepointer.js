@@ -152,6 +152,11 @@ Facepointer.prototype.initProps = function () {
   };
 };
 
+let url_facepointer_js = chrome.runtime.getURL("/scripts/facepointer/js/jeelizFaceTransfer.js");
+let url_facepointer_json = chrome.runtime.getURL(
+  "/scripts/facepointer/js/jeelizFaceTransferNNC.json"
+);
+
 /**
  * Load the Weboji head tracker
  */
@@ -183,6 +188,7 @@ Facepointer.prototype.createDebugger = function () {
   const $canvas = document.createElement("CANVAS");
   $canvas.classList.add("facepointer-canvas");
   $canvas.setAttribute("id", `facepointer-canvas-${this.id}`);
+  $canvas.style.display = "none";
   $wrap.appendChild($canvas);
 
   document.body.appendChild($wrap);
@@ -381,3 +387,11 @@ const fp = new Facepointer({ autostart: true });
 
 console.log(fp);
 console.log("We have facepointer!");
+
+chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
+  if (request.type === "click") {
+    const element = document.elementFromPoint(fp.pointer.x, fp.pointer.y);
+    console.log(element);
+    element.click();
+  }
+});

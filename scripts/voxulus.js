@@ -1,23 +1,9 @@
-import {
-  executeScript,
-  getMouseCoords,
-  getCurrentTab,
-  getTabByIndex,
-} from "./utilities.js";
+import { executeScript, sendClickMessage, getCurrentTab, getTabByIndex } from "./utilities.js";
 
 let scroll;
 
 const setNewInterval = (speed) => {
-  scroll = setInterval(
-    () => executeScript((s) => window.scrollBy(0, s), [speed]),
-    100
-  );
-};
-
-const mouseClick = (xPos, yPos) => {
-  const element = document.elementFromPoint(xPos, yPos);
-  console.log(element);
-  element.click();
+  scroll = setInterval(() => executeScript((s) => window.scrollBy(0, s), [speed]), 100);
 };
 
 const machine = {
@@ -34,9 +20,7 @@ const machine = {
         executeScript(() => document.execCommand("undo"));
       },
       async click() {
-        getMouseCoords({ type: "mouseCoords" }, (response) =>
-          executeScript(mouseClick, [response.xPos, response.yPos])
-        );
+        sendClickMessage({ type: "click" });
       },
       async scrollDown() {
         this.state = "SCROLL_DOWN";
@@ -155,8 +139,7 @@ const machine = {
                 found = true;
               }
               var children = node.children;
-              for (var i = 0; i < children.length; i++)
-                deepFirstSearch(children[i]);
+              for (var i = 0; i < children.length; i++) deepFirstSearch(children[i]);
             }
           }
           deepFirstSearch(document);
@@ -191,8 +174,7 @@ const machine = {
                 after = true;
               }
               var children = node.children;
-              for (var i = 0; i < children.length; i++)
-                deepFirstSearch(children[i]);
+              for (var i = 0; i < children.length; i++) deepFirstSearch(children[i]);
             }
           }
           deepFirstSearch(document);
@@ -207,10 +189,7 @@ const machine = {
         this.state = "SEARCH";
       },
       async writeStuff(stuff) {
-        executeScript(
-          (stuff) => document.execCommand("insertText", false, stuff),
-          [stuff]
-        );
+        executeScript((stuff) => document.execCommand("insertText", false, stuff), [stuff]);
       },
       async eraseStuff() {
         executeScript(() => document.execCommand("undo"));

@@ -27,4 +27,9 @@ async function getMouseCoords(msg, callback) {
   });
 }
 
-export { getCurrentTab, getTabByIndex, executeScript, getMouseCoords };
+async function sendClickMessage(msg) {
+  let tab = await getCurrentTab();
+  chrome.tabs.sendMessage(tab.id, msg, () => {});
+}
+
+export { getCurrentTab, getTabByIndex, executeScript, sendClickMessage };
