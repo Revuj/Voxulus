@@ -390,6 +390,26 @@ const fp = new Facepointer({ autostart: true });
 console.log(fp);
 console.log("We have facepointer!");
 
+let clickableElements = null;
+
+Object.defineProperty(Element.prototype, "documentOffsetTop", {
+  get: function () {
+    return (
+      this.offsetTop +
+      (this.offsetParent ? this.offsetParent.documentOffsetTop : 0)
+    );
+  },
+});
+
+Object.defineProperty(Element.prototype, "documentOffsetLeft", {
+  get: function () {
+    return (
+      this.offsetLeft +
+      (this.offsetParent ? this.offsetParent.documentOffsetLeft : 0)
+    );
+  },
+});
+
 function isClickable(node) {
   return (
     node.getAttribute("type") === "submit" ||
@@ -415,44 +435,54 @@ function getClickableElements(documentChildren) {
       for (var i = 0; i < children.length; i++) nodes.push(children[i]);
     }
   }
-  return clickables;
+  clickableElements = clickables;
 }
 
 function distanceBetween(element1, element2) {
   return (
-    (element2.offsetX - element1.offsetX) ** 2 +
-    (element2.offsetY - element1.offsetY) ** 2
+    (element2.documentOffsetLeft - element1.x) ** 2 +
+    (element2.documentOffsetTop - element1.y) ** 2
   );
 }
 
 function getClosestElement(position, elements) {
+  console.log(position);
   let closestElement = null;
   let closestDistance = Number.MAX_SAFE_INTEGER;
 
   elements.forEach((element) => {
     let distance = distanceBetween(position, element);
-    if (distance < closestDistance) closestElement = element;
+    if (distance < closestDistance) {
+      closestElement = element;
+      closestDistance = distance;
+    }
   });
 
+  console.log(closestElement);
+  console.log({
+    documentOffsetLeft: closestElement.documentOffsetLeft,
+    documentOffsetTop: closestElement.documentOffsetTop,
+  });
   return closestElement;
 }
 
-let clickableElements = getClickableElements(document.children);
-console.log("clickable elements:" + clickableElements);
-console.log("size: " + clickableElements.length);
+setInterval(getClickableElements, 5000, document.children);
 
 chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   if (request.type === "click") {
-    const element = document.elementFromPoint(fp.pointer.x, fp.pointer.y);
+    let element = document.elementFromPoint(fp.pointer.x, fp.pointer.y);
     if (!element || !isClickable(element)) {
+      if (!clickableElements) getClickableElements(document.children);
       element = getClosestElement(
-        { offsetX: fp.pointer.x, offsetY: fp.pointer.y },
+        {
+          x: fp.pointer.x + window.pageYOffset,
+          y: fp.pointer.y + window.pageYOffset,
+        },
         clickableElements
       );
+      console.log(element);
     }
-    console.log(element);
-    console.log(element.getAttribute("type"));
     element.style.backgroundColor = "green";
-    element.click();
+    // element.click();
   }
 });
