@@ -244,19 +244,22 @@ Facepointer.prototype.initSDK = function () {
  */
 Facepointer.prototype.updatePointer = function () {
   // Calculate X/Y
-  let rx = (this.head.rotation[0] * 180) / Math.PI;
-  let ry = (this.head.rotation[1] * 180) / Math.PI;
+  let rx = (this.head.rotation[0] * 180) / Math.PI; // vertical [0;30]
+  let ry = (this.head.rotation[1] * 180) / Math.PI; // horizontal [-40;40]
+  // console.log("x = " + rx + " ; y = " + ry)
   // Compensation for edge cases
-  rx -= 10;
+  rx -= 15;
   // rx = rx + 1 - 4 * (Math.abs(ry) / 45)
 
   // Clip
-  const rxMax = 20;
+  const rxMax = 12;
   const ryMax = 30;
   if (ry < -ryMax) ry = -ryMax;
   if (ry > ryMax) ry = ryMax;
-  if (rx < -rxMax - 10) rx = -rxMax;
-  if (rx > rxMax - 10) rx = rxMax;
+  if (rx < -rxMax) rx = -rxMax;
+  if (rx > rxMax) rx = rxMax;
+
+  // console.log("rx = " + rx + " ; ry = " + ry)
 
   // Remove some jittering by tweening the rotations values using TweenMax.
   // We could do it without TweenMax: 0.15 seconds is 15% of 1 second, so it tween over 4,5 frames (30 fps)
@@ -296,12 +299,15 @@ Facepointer.prototype.updatePointer = function () {
   // Let's reduce the values by 40% to go only 10% over the edge...
   // ryp *= 0.60
   // rxp *= 0.60
-  rxp *= this.config.sensitivity.xy;
-  ryp *= this.config.sensitivity.xy;
+  ryp *= this.config.sensitivity.x;
+  rxp *= this.config.sensitivity.y;
 
-  let _x = window.outerWidth * (ryp + 0.5);
-  // let _y = window.outerHeight * (rxp + 0.5)
-  let _y = window.outerHeight * rxp + window.outerHeight / 4;
+  let _x = window.innerWidth * (ryp + 0.5);
+  let _y = window.innerHeight * (rxp + 0.5);
+
+  // let _x = window.innerWidth * 0.98;
+  // let _y = window.innerHeight * 0.98;
+  // let _y = window.outerHeight * rxp + window.outerHeight / 4;
 
   // So at this stage it's a bit less jittering, but to improve the overall placement when the face stands
   // still, let's average out the position over 1 second (30 frames). This will lead to a bit of delay when
@@ -312,8 +318,8 @@ Facepointer.prototype.updatePointer = function () {
 
     // leave the cursor in the center to get rid
     // of the annoying jumping at start up.
-    tweenFace.x = window.outerWidth * 0.5;
-    tweenFace.y = window.outerHeight * 0.5;
+    tweenFace.x = window.innerWidth * 0.5;
+    tweenFace.y = window.innerHeight * 0.5;
   } else {
     const position = tweenFace.positionList.shift();
     position.x = _x;
@@ -391,27 +397,17 @@ let config = {
 
   sensitivity: {
     // A factor to adjust the cursors move speed by
-    xy: 0.6,
+    x: 0.5,
+    y: 0.5,
     // How much wider (+) or narrower (-) a smile needs to be to click
     click: 0,
   },
 
   stabilizer: {
     // How much stabilization to use: 0 = none, 3 = heavy
-    factor: 1,
+    factor: 3,
     // Number of frames to stabilizer over
     buffer: 30,
-  },
-
-  // Configs specific to plugins
-  plugin: {
-    click: {
-      // Morphs to watch for and their required confidences
-      morphs: {
-        0: 0.5,
-        1: 0.5,
-      },
-    },
   },
 };
 
