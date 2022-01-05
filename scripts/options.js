@@ -8,6 +8,17 @@ let startSearchCommands = [
   "open tab",
   "new tab",
 ];
+let clickCommands = [
+  "click",
+  "quick",
+  "creek",
+  "crake",
+  "quake",
+  "kwik",
+  "craic",
+  "craig",
+  "kreg",
+];
 let eraseStuffCommands = ["erase", "delete", "undo"];
 let fasterCommands = ["faster", "father", "fast"];
 let mediaForwardCommands = ["skip *query seconds", "forward *query seconds"];
@@ -30,7 +41,7 @@ if (annyang) {
   stopWritingCommands.forEach((command) => (commands[command] = stopWriting));
   startSearchCommands.forEach((command) => (commands[command] = startSearch));
   eraseStuffCommands.forEach((command) => (commands[command] = eraseStuff));
-  commands["click"] = click;
+  clickCommands.forEach((command) => (commands[command] = click));
   commands["scroll up"] = scrollUp;
   commands["scroll down"] = scrollDown;
   commands["stop"] = stop;

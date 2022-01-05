@@ -432,7 +432,7 @@ function getClickableElements(documentChildren) {
     if (node) {
       if (isClickable(node)) {
         clickables.push(node);
-        node.style.backgroundColor = "red";
+        //node.style.border = "2px solid blue";
       }
       var children = node.children;
       for (var i = 0; i < children.length; i++) nodes.push(children[i]);
@@ -469,23 +469,74 @@ function getClosestElement(position, elements) {
   return closestElement;
 }
 
+let closestElements = [];
+let maxClosestElements = 10;
+
+function mostDistantClosestElementIndex(closestElements) {
+  let longestDistance = Number.MIN_SAFE_INTEGER;
+
+  let index = 0;
+  for (let i = 0; i < closestElements.length; i++) {
+    let element = closestElements[i];
+    if (element.distance > longestDistance) {
+      longestDistance = element.distance;
+      index = i;
+    }
+  }
+  return { index, distance: longestDistance };
+}
+
+function getClosestElements(position, elements) {
+  elements.forEach((element) => {
+    let distance = distanceBetween(position, element);
+
+    if (closestElements.length < maxClosestElements)
+      closestElements.push({ element, distance });
+    else {
+      let mostDistantClosestElement =
+        mostDistantClosestElementIndex(closestElements);
+      if (distance < mostDistantClosestElement.distance) {
+        closestElements[mostDistantClosestElement.index] = {
+          element,
+          distance,
+        };
+      }
+    }
+  });
+}
+
+function highlightElement(element, color) {
+  element.style.border = `2px solid ${color}`;
+}
+
 setInterval(getClickableElements, 5000, document.children);
+
+let selectedElement = null;
 
 chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   if (request.type === "click") {
-    let element = document.elementFromPoint(fp.pointer.x, fp.pointer.y);
-    if (!element || !isClickable(element)) {
-      if (!clickableElements) getClickableElements(document.children);
-      element = getClosestElement(
+    let fpX = fp.pointer.x + window.pageXOffset;
+    let fpY = fp.pointer.y + window.pageYOffset;
+    let element = document.elementFromPoint(fpX, fpY);
+    console.log(element);
+    if (element) {
+      highlightElement(element, "green");
+      selectedElement = element;
+      getClosestElements(
         {
-          x: fp.pointer.x + window.pageXOffset,
-          y: fp.pointer.y + window.pageYOffset,
+          x: fpX,
+          y: fpY,
         },
         clickableElements
       );
-      console.log(element);
+      console.log(closestElements);
+      closestElements.forEach((element) =>
+        highlightElement(element.element, "blue")
+      );
+    } else {
     }
-    element.style.backgroundColor = "green";
-    element.click();
+  } else if (request.type === "yes") {
+    selectedElement.click();
+  } else if (request.type === "next") {
   }
 });
