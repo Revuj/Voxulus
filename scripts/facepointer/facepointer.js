@@ -104,7 +104,7 @@ Facepointer.prototype.cleanConfig = function (config) {
       },
       stabilizer: {
         // How much stabilization to use: 0 = none, 3 = heavy
-        factor: 1,
+        factor: 2,
         // Number of frames to stabilizer over
         buffer: 30,
       },
@@ -385,7 +385,37 @@ Facepointer.prototype.addListeners = function () {
   });
 })();
 
-const fp = new Facepointer({ autostart: true });
+let config = {
+  // Whether Facepointer should automatically start after instantiation
+  autostart: true,
+
+  sensitivity: {
+    // A factor to adjust the cursors move speed by
+    xy: 0.6,
+    // How much wider (+) or narrower (-) a smile needs to be to click
+    click: 0,
+  },
+
+  stabilizer: {
+    // How much stabilization to use: 0 = none, 3 = heavy
+    factor: 1,
+    // Number of frames to stabilizer over
+    buffer: 30,
+  },
+
+  // Configs specific to plugins
+  plugin: {
+    click: {
+      // Morphs to watch for and their required confidences
+      morphs: {
+        0: 0.5,
+        1: 0.5,
+      },
+    },
+  },
+};
+
+const fp = new Facepointer(config);
 
 console.log(fp);
 console.log("We have facepointer!");
@@ -506,6 +536,10 @@ function getClosestElements(position, elements) {
 }
 
 function highlightElement(element, color) {
+  element.style.border = none;
+}
+
+function highlightElement(element, color) {
   element.style.border = `2px solid ${color}`;
 }
 
@@ -538,5 +572,9 @@ chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   } else if (request.type === "yes") {
     selectedElement.click();
   } else if (request.type === "next") {
+    removeHighlightElement(selectedElement);
+    selectedElement =
+      closestElements[selectedElementIndex % maxClosestElements];
+    highlightElement(selectedElement);
   }
 });
