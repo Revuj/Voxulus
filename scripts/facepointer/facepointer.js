@@ -475,7 +475,7 @@ chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
       if (!clickableElements) getClickableElements(document.children);
       element = getClosestElement(
         {
-          x: fp.pointer.x + window.pageYOffset,
+          x: fp.pointer.x + window.pageXOffset,
           y: fp.pointer.y + window.pageYOffset,
         },
         clickableElements
@@ -483,6 +483,6 @@ chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
       console.log(element);
     }
     element.style.backgroundColor = "green";
-    // element.click();
+    element.click();
   }
 });
