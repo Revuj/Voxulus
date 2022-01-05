@@ -413,9 +413,12 @@ Object.defineProperty(Element.prototype, "documentOffsetLeft", {
 function isClickable(node) {
   return (
     node.getAttribute("type") === "submit" ||
+    node.getAttribute("role") === "button" ||
+    node.getAttribute("role") === "option" ||
     node.tagName === "BUTTON" ||
     node.tagName === "A" ||
-    node.tagName === "INPUT"
+    node.tagName === "INPUT" ||
+    node.tagName === "TEXTAREA"
   );
 }
 
