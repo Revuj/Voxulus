@@ -188,6 +188,9 @@ const machine = {
       startSearch() {
         this.state = "SEARCH";
       },
+      startSpelling() {
+        this.state = "SPELLING";
+      },
       async writeStuff(stuff) {
         executeScript((stuff) => document.execCommand("insertText", false, stuff), [stuff]);
       },
@@ -202,6 +205,23 @@ const machine = {
       async writeStuff(stuff) {
         window.open("http://google.com/search?q=" + stuff);
         this.state = "IDLE";
+      },
+    },
+    SPELLING: {
+      startWriting() {
+        this.state = "WRITING";
+      },
+      stopSpelling() {
+        this.state = "WRITING";
+      },
+      startSearch() {
+        this.state = "SEARCH";
+      },
+      async writeStuff(stuff) { // Writes only first letter
+        executeScript((stuff) => document.execCommand("insertText", false, stuff[0]), [stuff[0]]);
+      },
+      async eraseStuff() {
+        executeScript(() => document.execCommand("undo"));
       },
     },
     SCROLL_DOWN: {

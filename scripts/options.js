@@ -2,6 +2,8 @@ import voxulus from "./voxulus.js";
 
 let startWritingCommands = ["start writing", "begin writing"];
 let stopWritingCommands = ["stop writing", "stop search"];
+let startSpellingCommands = ["start spelling", "begin spelling"];
+let stopSpellingCommands = ["stop spelling"];
 let startSearchCommands = [
   "start search",
   "start searching",
@@ -39,6 +41,8 @@ if (annyang) {
   var commands = {};
   startWritingCommands.forEach((command) => (commands[command] = startWriting));
   stopWritingCommands.forEach((command) => (commands[command] = stopWriting));
+  startSpellingCommands.forEach((command) => (commands[command] = startSpelling));
+  stopSpellingCommands.forEach((command) => (commands[command] = stopSpelling));
   startSearchCommands.forEach((command) => (commands[command] = startSearch));
   eraseStuffCommands.forEach((command) => (commands[command] = eraseStuff));
   clickCommands.forEach((command) => (commands[command] = click));
@@ -85,8 +89,18 @@ if (annyang) {
     console.log(voxulus);
   }
 
+  async function startSpelling() {
+    voxulus.dispatch("startSpelling");
+    console.log(voxulus);
+  }
+
   async function stopWriting() {
     voxulus.dispatch("stopWriting");
+    console.log(voxulus);
+  }
+
+  async function stopSpelling() {
+    voxulus.dispatch("stopSpelling");
     console.log(voxulus);
   }
 
