@@ -74,10 +74,23 @@ if (annyang) {
   commands["submit"] = submit;
   commands["next"] = next;
 
+  commands["newline"] = newline;
+  commands["whitespace"] = whitespace;
+
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
     voxulus.dispatch("writeStuff", userSaid[0])
   );
+
+  async function newline() {
+    voxulus.dispatch("writeStuff", "\n")
+    console.log(voxulus);
+  }
+
+  async function whitespace() {
+    voxulus.dispatch("writeStuff", " ")
+    console.log(voxulus);
+  }
 
   async function startWriting() {
     voxulus.dispatch("startWriting");
