@@ -543,6 +543,29 @@ setInterval(getClickableElements, 5000, document.children);
 
 let selectedElement = null;
 
+function click(x, y) {
+  var ev = document.createEvent("MouseEvent");
+  var el = document.elementFromPoint(x, y);
+  ev.initMouseEvent(
+    "click",
+    true /* bubble */,
+    true /* cancelable */,
+    window,
+    null,
+    x,
+    y,
+    0,
+    0 /* coordinates */,
+    false,
+    false,
+    false,
+    false /* modifier keys */,
+    0 /*left*/,
+    null
+  );
+  el.dispatchEvent(ev);
+}
+
 chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   if (request.type === "click") {
     let fpX = fp.pointer.x + window.pageXOffset;
@@ -550,19 +573,21 @@ chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
     let element = document.elementFromPoint(fpX, fpY);
     console.log(element);
     if (element) {
-      highlightElement(element, "green");
-      selectedElement = element;
-      getClosestElements(
-        {
-          x: fpX,
-          y: fpY,
-        },
-        clickableElements
-      );
-      console.log(closestElements);
-      closestElements.forEach((element) =>
-        highlightElement(element.element, "blue")
-      );
+      element.focus();
+      element.click();
+      // highlightElement(element, "green");
+      // selectedElement = element;
+      // getClosestElements(
+      //   {
+      //     x: fpX,
+      //     y: fpY,
+      //   },
+      //   clickableElements
+      // );
+      // console.log(closestElements);
+      // closestElements.forEach((element) =>
+      //   highlightElement(element.element, "blue")
+      // );
     } else {
     }
   } else if (request.type === "yes") {

@@ -1,9 +1,17 @@
-import { executeScript, sendClickMessage, getCurrentTab, getTabByIndex } from "./utilities.js";
+import {
+  executeScript,
+  sendClickMessage,
+  getCurrentTab,
+  getTabByIndex,
+} from "./utilities.js";
 
 let scroll;
 
 const setNewInterval = (speed) => {
-  scroll = setInterval(() => executeScript((s) => window.scrollBy(0, s), [speed]), 100);
+  scroll = setInterval(
+    () => executeScript((s) => window.scrollBy(0, s), [speed]),
+    100
+  );
 };
 
 const machine = {
@@ -127,6 +135,10 @@ const machine = {
             if (node) {
               if (found) return;
               if (node === document.activeElement) {
+                if (node.form) {
+                  node.form.submit();
+                  return;
+                }
                 after = true;
               }
               if (
@@ -139,7 +151,8 @@ const machine = {
                 found = true;
               }
               var children = node.children;
-              for (var i = 0; i < children.length; i++) deepFirstSearch(children[i]);
+              for (var i = 0; i < children.length; i++)
+                deepFirstSearch(children[i]);
             }
           }
           deepFirstSearch(document);
@@ -161,7 +174,9 @@ const machine = {
                 (node.getAttribute("type") === "submit" ||
                   node.tagName === "BUTTON" ||
                   node.tagName === "A" ||
-                  node.tagName === "INPUT")
+                  node.tagName === "INPUT" ||
+                  node.contentEditable === "true" ||
+                  node.role === "textbox")
               ) {
                 node.focus();
                 node.classList.add("voxulus-border");
@@ -174,7 +189,8 @@ const machine = {
                 after = true;
               }
               var children = node.children;
-              for (var i = 0; i < children.length; i++) deepFirstSearch(children[i]);
+              for (var i = 0; i < children.length; i++)
+                deepFirstSearch(children[i]);
             }
           }
           deepFirstSearch(document);
@@ -189,7 +205,10 @@ const machine = {
         this.state = "SEARCH";
       },
       async writeStuff(stuff) {
-        executeScript((stuff) => document.execCommand("insertText", false, stuff), [stuff]);
+        executeScript(
+          (stuff) => document.execCommand("insertText", false, stuff),
+          [stuff]
+        );
       },
       async eraseStuff() {
         executeScript(() => document.execCommand("undo"));
