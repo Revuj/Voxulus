@@ -6,15 +6,52 @@ const setNewInterval = (speed) => {
   scroll = setInterval(() => executeScript((s) => window.scrollBy(0, s), [speed]), 100);
 };
 
+const clearVisualFeedback = (clearPulse) => {
+  executeScript(
+    (clearPulse) => {
+      const pointer = document.querySelector(".facepointer-pointer");
+      const pulse = document.querySelector(".facepointer-pointer-pulse");
+
+      pointer.style.background = "red";
+      pointer.style.borderColor = "red";
+      pulse.style.background = "rgba(255, 0, 0, 0.788)";
+      if (clearPulse) pulse.style.display = "none";
+    },
+    [clearPulse]
+  );
+};
+
+const visualListeningFeedback = () => {
+  executeScript(() => {
+    const pulse = document.querySelector(".facepointer-pointer-pulse");
+    pulse.style.display = "block";
+  });
+};
+
+const visualFeedback = (clearPulse) => {
+  executeScript(() => {
+    const pointer = document.querySelector(".facepointer-pointer");
+    const pulse = document.querySelector(".facepointer-pointer-pulse");
+
+    pointer.style.background = "rgb(0,200,0)";
+    pointer.style.borderColor = "rgb(0,200,0)";
+    pulse.style.background = "rgb(0,255,0)";
+    pulse.style.display = "block";
+  });
+  setTimeout(clearVisualFeedback.bind(null, clearPulse), 1000);
+};
+
 const machine = {
   state: "IDLE",
   transitions: {
     IDLE: {
       startWriting() {
         this.state = "WRITING";
+        visualListeningFeedback();
       },
       startSearch() {
         this.state = "SEARCH";
+        visualListeningFeedback();
       },
       async eraseStuff() {
         executeScript(() => document.execCommand("undo"));
@@ -127,6 +164,10 @@ const machine = {
             if (node) {
               if (found) return;
               if (node === document.activeElement) {
+                if (node.form) {
+                  node.form.submit();
+                  return;
+                }
                 after = true;
               }
               if (
@@ -161,7 +202,9 @@ const machine = {
                 (node.getAttribute("type") === "submit" ||
                   node.tagName === "BUTTON" ||
                   node.tagName === "A" ||
-                  node.tagName === "INPUT")
+                  node.tagName === "INPUT" ||
+                  node.contentEditable === "true" ||
+                  node.role === "textbox")
               ) {
                 node.focus();
                 node.classList.add("voxulus-border");
@@ -187,6 +230,7 @@ const machine = {
       },
       startSearch() {
         this.state = "SEARCH";
+        visualListeningFeedback();
       },
       startSpelling() {
         this.state = "SPELLING";
@@ -272,6 +316,10 @@ const machine = {
     const action = this.transitions[this.state][actionName];
 
     if (action) {
+      if (actionName !== "writeStuff")
+        actionName === "startSearch" || actionName === "startWriting"
+          ? visualFeedback(false)
+          : visualFeedback(true);
       action.call(this, ...args);
     } else {
       console.log("invalid action");

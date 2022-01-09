@@ -152,9 +152,7 @@ Facepointer.prototype.initProps = function () {
   };
 };
 
-let url_facepointer_js = chrome.runtime.getURL(
-  "/scripts/facepointer/js/jeelizFaceTransfer.js"
-);
+let url_facepointer_js = chrome.runtime.getURL("/scripts/facepointer/js/jeelizFaceTransfer.js");
 let url_facepointer_json = chrome.runtime.getURL(
   "/scripts/facepointer/js/jeelizFaceTransferNNC.json"
 );
@@ -203,6 +201,10 @@ Facepointer.prototype.createPointer = function () {
   const $pointer = document.createElement("DIV");
   $pointer.classList.add("facepointer-pointer");
   this.pointer.$el = $pointer;
+  const $pulse = document.createElement("div");
+  $pulse.classList.add("facepointer-pointer-pulse");
+  $pulse.style.display = "none";
+  $pointer.appendChild($pulse);
 
   document.body.appendChild($pointer);
 };
@@ -231,6 +233,12 @@ Facepointer.prototype.initSDK = function () {
               document.body.classList.add("facepointer-started");
               this.isStarted = true;
               this.track();
+
+              // Adjust pulse width and height
+              const pointer = document.querySelector(".facepointer-pointer");
+              const pulse = document.querySelector(".facepointer-pointer-pulse");
+              pulse.style.width = `${pointer.clientWidth}px`;
+              pulse.style.height = `${pointer.clientHeight}px`;
             },
           });
         },
@@ -416,161 +424,16 @@ const fp = new Facepointer(config);
 console.log(fp);
 console.log("We have facepointer!");
 
-let clickableElements = null;
-
-Object.defineProperty(Element.prototype, "documentOffsetTop", {
-  get: function () {
-    return (
-      this.offsetTop +
-      (this.offsetParent ? this.offsetParent.documentOffsetTop : 0)
-    );
-  },
-});
-
-Object.defineProperty(Element.prototype, "documentOffsetLeft", {
-  get: function () {
-    return (
-      this.offsetLeft +
-      (this.offsetParent ? this.offsetParent.documentOffsetLeft : 0)
-    );
-  },
-});
-
-function isClickable(node) {
-  return (
-    node.getAttribute("type") === "submit" ||
-    node.getAttribute("role") === "button" ||
-    node.getAttribute("role") === "option" ||
-    node.tagName === "BUTTON" ||
-    node.tagName === "A" ||
-    node.tagName === "INPUT" ||
-    node.tagName === "TEXTAREA"
-  );
-}
-
-function getClickableElements(documentChildren) {
-  let clickables = [];
-  let nodes = [...documentChildren];
-  let counter = 0;
-  while (nodes && counter < 5000) {
-    counter++;
-    node = nodes.shift();
-    if (node) {
-      if (isClickable(node)) {
-        clickables.push(node);
-        //node.style.border = "2px solid blue";
-      }
-      var children = node.children;
-      for (var i = 0; i < children.length; i++) nodes.push(children[i]);
-    }
-  }
-  clickableElements = clickables;
-}
-
-function distanceBetween(element1, element2) {
-  return (
-    (element2.documentOffsetLeft - element1.x) ** 2 +
-    (element2.documentOffsetTop - element1.y) ** 2
-  );
-}
-
-function getClosestElement(position, elements) {
-  console.log(position);
-  let closestElement = null;
-  let closestDistance = Number.MAX_SAFE_INTEGER;
-
-  elements.forEach((element) => {
-    let distance = distanceBetween(position, element);
-    if (distance < closestDistance) {
-      closestElement = element;
-      closestDistance = distance;
-    }
-  });
-
-  console.log(closestElement);
-  console.log({
-    documentOffsetLeft: closestElement.documentOffsetLeft,
-    documentOffsetTop: closestElement.documentOffsetTop,
-  });
-  return closestElement;
-}
-
-let closestElements = [];
-let maxClosestElements = 10;
-
-function mostDistantClosestElementIndex(closestElements) {
-  let longestDistance = Number.MIN_SAFE_INTEGER;
-
-  let index = 0;
-  for (let i = 0; i < closestElements.length; i++) {
-    let element = closestElements[i];
-    if (element.distance > longestDistance) {
-      longestDistance = element.distance;
-      index = i;
-    }
-  }
-  return { index, distance: longestDistance };
-}
-
-function getClosestElements(position, elements) {
-  elements.forEach((element) => {
-    let distance = distanceBetween(position, element);
-
-    if (closestElements.length < maxClosestElements)
-      closestElements.push({ element, distance });
-    else {
-      let mostDistantClosestElement =
-        mostDistantClosestElementIndex(closestElements);
-      if (distance < mostDistantClosestElement.distance) {
-        closestElements[mostDistantClosestElement.index] = {
-          element,
-          distance,
-        };
-      }
-    }
-  });
-}
-
-function highlightElement(element, color) {
-  element.style.border = none;
-}
-
-function highlightElement(element, color) {
-  element.style.border = `2px solid ${color}`;
-}
-
-setInterval(getClickableElements, 5000, document.children);
-
-let selectedElement = null;
-
 chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   if (request.type === "click") {
-    let fpX = fp.pointer.x + window.pageXOffset;
-    let fpY = fp.pointer.y + window.pageYOffset;
+    let fpX = fp.pointer.x;
+    let fpY = fp.pointer.y;
+    console.log({ x: fpX, y: fpY });
     let element = document.elementFromPoint(fpX, fpY);
     console.log(element);
     if (element) {
-      highlightElement(element, "green");
-      selectedElement = element;
-      getClosestElements(
-        {
-          x: fpX,
-          y: fpY,
-        },
-        clickableElements
-      );
-      console.log(closestElements);
-      closestElements.forEach((element) =>
-        highlightElement(element.element, "blue")
-      );
-    } else {
+      element.focus();
+      element.click();
     }
-  } else if (request.type === "yes") {
-    selectedElement.click();
-  } else if (request.type === "next") {
-    removeHighlightElement(selectedElement);
-    selectedElement =
-      closestElements[selectedElementIndex % maxClosestElements];
-    highlightElement(selectedElement);
   }
 });
