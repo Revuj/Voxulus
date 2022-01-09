@@ -152,9 +152,7 @@ Facepointer.prototype.initProps = function () {
   };
 };
 
-let url_facepointer_js = chrome.runtime.getURL(
-  "/scripts/facepointer/js/jeelizFaceTransfer.js"
-);
+let url_facepointer_js = chrome.runtime.getURL("/scripts/facepointer/js/jeelizFaceTransfer.js");
 let url_facepointer_json = chrome.runtime.getURL(
   "/scripts/facepointer/js/jeelizFaceTransferNNC.json"
 );
@@ -203,6 +201,10 @@ Facepointer.prototype.createPointer = function () {
   const $pointer = document.createElement("DIV");
   $pointer.classList.add("facepointer-pointer");
   this.pointer.$el = $pointer;
+  const $pulse = document.createElement("div");
+  $pulse.classList.add("facepointer-pointer-pulse");
+  $pulse.style.display = "none";
+  $pointer.appendChild($pulse);
 
   document.body.appendChild($pointer);
 };
@@ -231,6 +233,12 @@ Facepointer.prototype.initSDK = function () {
               document.body.classList.add("facepointer-started");
               this.isStarted = true;
               this.track();
+
+              // Adjust pulse width and height
+              const pointer = document.querySelector(".facepointer-pointer");
+              const pulse = document.querySelector(".facepointer-pointer-pulse");
+              pulse.style.width = `${pointer.clientWidth}px`;
+              pulse.style.height = `${pointer.clientHeight}px`;
             },
           });
         },

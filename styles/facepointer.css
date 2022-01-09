@@ -38,39 +38,64 @@
   display: inline-block;
 }
 body.facepointer-clicked .facepointer-pointer {
-  background: #ff0;
+  background: rgb(255, 0, 98);
   animation: shadow-pulse 0.15s 1;
 }
-@-moz-keyframes shadow-pulse {
-  0% {
-    box-shadow: 0 0 0 15px rgba(255, 0, 0, 0.45);
+
+.facepointer-pointer-pulse {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  z-index: 999998;
+  background: rgba(255, 0, 0, 0.788);
+  border-radius: 50%;
+  animation: pulse 0.5s ease infinite;
+}
+
+@-moz-keyframes pulse {
+  from {
+    transform: scale(1);
+    opacity: 1;
   }
+
   to {
-    box-shadow: 0 0 0 75px rgba(255, 0, 0, 0);
+    transform: scale(3);
+    opacity: 0;
   }
 }
-@-webkit-keyframes shadow-pulse {
-  0% {
-    box-shadow: 0 0 0 15px rgba(255, 0, 0, 0.45);
+@-webkit-keyframes pulse {
+  from {
+    transform: scale(1);
+    opacity: 1;
   }
+
   to {
-    box-shadow: 0 0 0 75px rgba(255, 0, 0, 0);
+    transform: scale(3);
+    opacity: 0;
   }
 }
-@-o-keyframes shadow-pulse {
-  0% {
-    box-shadow: 0 0 0 15px rgba(255, 0, 0, 0.45);
+@-o-keyframes pulse {
+  from {
+    transform: scale(1);
+    opacity: 1;
   }
+
   to {
-    box-shadow: 0 0 0 75px rgba(255, 0, 0, 0);
+    transform: scale(3);
+    opacity: 0;
   }
 }
-@keyframes shadow-pulse {
-  0% {
-    box-shadow: 0 0 0 15px rgba(255, 0, 0, 0.45);
+@keyframes pulse {
+  from {
+    transform: scale(1);
+    opacity: 1;
   }
+
   to {
-    box-shadow: 0 0 0 75px rgba(255, 0, 0, 0);
+    transform: scale(3);
+    opacity: 0;
   }
 }
+
 /*# sourceMappingURL=/facepointer.css.map */
