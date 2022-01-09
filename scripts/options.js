@@ -76,6 +76,9 @@ if (annyang) {
 
   commands["newline"] = newline;
   commands["whitespace"] = whitespace;
+  commands["at sign"] = atSign;
+  commands["dot"] = dot;
+
 
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
@@ -89,6 +92,16 @@ if (annyang) {
 
   async function whitespace() {
     voxulus.dispatch("writeStuff", " ")
+    console.log(voxulus);
+  }
+
+  async function atSign() {
+    voxulus.dispatch("writeStuff", "@")
+    console.log(voxulus);
+  }
+
+  async function dot() {
+    voxulus.dispatch("writeStuff", ".")
     console.log(voxulus);
   }
 

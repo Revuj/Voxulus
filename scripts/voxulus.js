@@ -234,6 +234,7 @@ const machine = {
       },
       startSpelling() {
         this.state = "SPELLING";
+        visualListeningFeedback();
       },
       async writeStuff(stuff) {
         executeScript((stuff) => document.execCommand("insertText", false, stuff), [stuff]);
@@ -317,7 +318,7 @@ const machine = {
 
     if (action) {
       if (actionName !== "writeStuff")
-        actionName === "startSearch" || actionName === "startWriting"
+        actionName === "startSearch" || actionName === "startWriting" || actionName === "startSpelling"
           ? visualFeedback(false)
           : visualFeedback(true);
       action.call(this, ...args);
