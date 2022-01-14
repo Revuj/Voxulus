@@ -41,7 +41,9 @@ if (annyang) {
   var commands = {};
   startWritingCommands.forEach((command) => (commands[command] = startWriting));
   stopWritingCommands.forEach((command) => (commands[command] = stopWriting));
-  startSpellingCommands.forEach((command) => (commands[command] = startSpelling));
+  startSpellingCommands.forEach(
+    (command) => (commands[command] = startSpelling)
+  );
   stopSpellingCommands.forEach((command) => (commands[command] = stopSpelling));
   startSearchCommands.forEach((command) => (commands[command] = startSearch));
   eraseStuffCommands.forEach((command) => (commands[command] = eraseStuff));
@@ -79,29 +81,28 @@ if (annyang) {
   commands["at sign"] = atSign;
   commands["dot"] = dot;
 
-
   // when it's not a command
   annyang.addCallback("resultNoMatch", (userSaid) =>
     voxulus.dispatch("writeStuff", userSaid[0])
   );
 
   async function newline() {
-    voxulus.dispatch("writeStuff", "\n")
+    voxulus.dispatch("writeStuff", "\n");
     console.log(voxulus);
   }
 
   async function whitespace() {
-    voxulus.dispatch("writeStuff", " ")
+    voxulus.dispatch("writeStuff", " ");
     console.log(voxulus);
   }
 
   async function atSign() {
-    voxulus.dispatch("writeStuff", "@")
+    voxulus.dispatch("writeStuff", "@");
     console.log(voxulus);
   }
 
   async function dot() {
-    voxulus.dispatch("writeStuff", ".")
+    voxulus.dispatch("writeStuff", ".");
     console.log(voxulus);
   }
 

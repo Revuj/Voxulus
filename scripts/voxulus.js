@@ -1,9 +1,17 @@
-import { executeScript, sendClickMessage, getCurrentTab, getTabByIndex } from "./utilities.js";
+import {
+  executeScript,
+  sendClickMessage,
+  getCurrentTab,
+  getTabByIndex,
+} from "./utilities.js";
 
 let scroll;
 
 const setNewInterval = (speed) => {
-  scroll = setInterval(() => executeScript((s) => window.scrollBy(0, s), [speed]), 100);
+  scroll = setInterval(
+    () => executeScript((s) => window.scrollBy(0, s), [speed]),
+    100
+  );
 };
 
 const clearVisualFeedback = (clearPulse) => {
@@ -180,7 +188,8 @@ const machine = {
                 found = true;
               }
               var children = node.children;
-              for (var i = 0; i < children.length; i++) deepFirstSearch(children[i]);
+              for (var i = 0; i < children.length; i++)
+                deepFirstSearch(children[i]);
             }
           }
           deepFirstSearch(document);
@@ -217,7 +226,8 @@ const machine = {
                 after = true;
               }
               var children = node.children;
-              for (var i = 0; i < children.length; i++) deepFirstSearch(children[i]);
+              for (var i = 0; i < children.length; i++)
+                deepFirstSearch(children[i]);
             }
           }
           deepFirstSearch(document);
@@ -237,7 +247,10 @@ const machine = {
         visualListeningFeedback();
       },
       async writeStuff(stuff) {
-        executeScript((stuff) => document.execCommand("insertText", false, stuff), [stuff]);
+        executeScript(
+          (stuff) => document.execCommand("insertText", false, stuff),
+          [stuff]
+        );
       },
       async eraseStuff() {
         executeScript(() => document.execCommand("undo"));
@@ -262,8 +275,13 @@ const machine = {
       startSearch() {
         this.state = "SEARCH";
       },
-      async writeStuff(stuff) { // Writes only first letter
-        executeScript((stuff) => document.execCommand("insertText", false, stuff[0]), [stuff[0]]);
+      async writeStuff(stuff) {
+        // Writes only first letter
+        executeScript(
+          (stuff) =>
+            document.execCommand("insertText", false, stuff[0].toLowerCase()),
+          [stuff[0].toLowerCase()]
+        );
       },
       async eraseStuff() {
         executeScript(() => document.execCommand("undo"));
@@ -318,7 +336,9 @@ const machine = {
 
     if (action) {
       if (actionName !== "writeStuff")
-        actionName === "startSearch" || actionName === "startWriting" || actionName === "startSpelling"
+        actionName === "startSearch" ||
+        actionName === "startWriting" ||
+        actionName === "startSpelling"
           ? visualFeedback(false)
           : visualFeedback(true);
       action.call(this, ...args);
