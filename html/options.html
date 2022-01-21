@@ -5,9 +5,201 @@
     <link rel="stylesheet" href="../styles/facepointer.css" />
   </head>
   <body>
-    <div id="buttonDiv"></div>
-    <div>
-      <p>Choose a different background color!</p>
+    <div id="page-content">
+      <div id="hero">
+        <img src="../images/logo.png" alt="logo" />
+      </div>
+      <div id="description">
+        <h4>Voxulus</h4>
+        <p>
+          Voxulus is browser extension that helps people with motor disabilities
+          have an easier time navigating the web, using not only head movement
+          but also voice commands.
+        </p>
+      </div>
+      <div id="demo">
+        <h4>Demo</h4>
+        <p>
+          Watch our demo
+          <a href="https://www.youtube.com/watch?v=40zUF6EQlds">here</a>.
+        </p>
+      </div>
+      <div id="commands">
+        <h4>Voice Commands</h4>
+        <ul>
+          <li class="command-item">
+            <span>Search the Internet</span>
+            <ul>
+              <li>
+                <span class="command">start search/new tab</span> - After
+                requesting the search parameters it'll perform a Google search
+                of them
+              </li>
+            </ul>
+          </li>
+          <li class="command-item">
+            <span>Click Something</span>
+            <ul>
+              <li>
+                <span class="command">click</span> - After requesting the
+                commands the element directly below the head movement pointer is
+                left clicked
+              </li>
+            </ul>
+          </li>
+          <li class="command-item">
+            <span>Scroll a Page</span>
+            <ul>
+              <li>
+                <span class="command">scroll down</span> - Move down the content
+                of a website
+              </li>
+              <li>
+                <span class="command">scroll up</span> - Move up the content of
+                a website
+              </li>
+              <li>
+                <span class="command">stop</span> - Stop moving the content of a
+                website
+              </li>
+              <li>
+                <span class="command">faster</span> - Increase the speed the
+                content of a website is moving
+              </li>
+              <li>
+                <span class="command">slower</span> - Decrease the speed the
+                content of a website is moving
+              </li>
+            </ul>
+          </li>
+          <li class="command-item">
+            <span>Zoom</span>
+            <ul>
+              <li>
+                <span class="command">zoom out</span> - Zooms out the current
+                tab
+              </li>
+              <li>
+                <span class="command">zoom in</span> - Zooms in the current tab
+              </li>
+            </ul>
+          </li>
+          <li class="command-item">
+            <span>Browser Control</span>
+            <ul>
+              <li>
+                <span class="command">go back</span> - Goes back in the browser
+                history
+              </li>
+              <li>
+                <span class="command">go forward</span> - Goes forward in the
+                browser history
+              </li>
+              <li>
+                <span class="command">reload</span> - Reloads the current page
+              </li>
+            </ul>
+          </li>
+          <li class="command-item">
+            <span>Write Text</span>
+            <ul>
+              <li>
+                <span class="command">start writing</span> - Starts listening
+                for speech to transform to text
+              </li>
+              <li>
+                <span class="command">stop writing</span> - Stops listening for
+                speech
+              </li>
+              <li>
+                <span class="command">erase/delete/undo</span> - Removes the
+                last added input
+              </li>
+              <li>
+                <span class="command">start spelling</span> - Starts listening
+                for speech to transform to characters (you can use words
+                starting with the character you want to input)
+              </li>
+              <li>
+                <span class="command">stop spelling</span> - Stops listening for
+                speech
+              </li>
+              <li>
+                <span class="command">next</span> - Selects the next input
+                element
+              </li>
+              <li>
+                <span class="command">submit</span> - Submits the current form
+              </li>
+            </ul>
+          </li>
+          <li class="command-item">
+            <span>Play Media Content</span>
+            <ul>
+              <li><span class="command">play</span> - Plays media content</li>
+              <li><span class="command">pause</span> - Pauses media content</li>
+              <li>
+                <span class="command">back [time] seconds</span> - Rewinds the
+                media content [time] seconds
+              </li>
+              <li>
+                <span class="command"
+                  >forward [time] seconds/skip [time] seconds</span
+                >
+                - Forwards the media content [time] seconds
+              </li>
+              <li>
+                <span class="command">volume up</span> - Increases volume level
+              </li>
+              <li>
+                <span class="command">volume down</span> - Decreases volume
+                level
+              </li>
+            </ul>
+          </li>
+          <li class="command-item">
+            <span>Tab Management</span>
+            <ul>
+              <li>
+                <span class="command">close tab</span> - Closes the current tab
+              </li>
+              <li>
+                <span class="command">close tab [number]</span> - Closes the tab
+                at position [number]
+              </li>
+              <li>
+                <span class="command">select tab [number]</span> - Switches to
+                the tab at position [number]
+              </li>
+            </ul>
+          </li>
+          <li class="command-item">
+            <span>Special Characters</span>
+            <ul>
+              <li>
+                <span class="command">newline</span> - Changes to a new line in
+                the current input field
+              </li>
+              <li>
+                <span class="command">whitespace</span> - Adds a whitespace ("")
+                to the current input
+              </li>
+              <li>
+                <span class="command">at sign</span> - Adds a at sign ("@") to
+                the current input
+              </li>
+              <li>
+                <span class="command">dot</span> - Adds a dot (".") to the
+                current input
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div id="contact">
+        <h4>Contact</h4>
+        <span>voxulus@gmail.com</span>
+      </div>
     </div>
   </body>
   <script src="../scripts/annyang.js"></script>
